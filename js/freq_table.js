@@ -27,53 +27,59 @@ Lupov put his fingers through his thinning hair as though to reassure himself th
 
 "Will, it will last our time, won't it?"`;
 
-const charFreq = {};
 
-for(let i = 0; i < passage.length; i++) {
-  let c = passage.charAt(i);
-  if (charFreq.hasOwnProperty(c)) {
-    charFreq[c] += 1;
-  } else {
-    charFreq[c] = 1;
-  }
-}
 
 $(() => {
-  const bodySelection = d3.select("body");
-  const svgSelection = bodySelection.append("svg")
-    .attr("width", "100%")
-    .attr("height", 100);
-
-  let svg = svgSelection.append("rect")
-              .attr("x", 0)
-              .attr("y", 0)
-              .attr("width", 100)
-              .attr("height", 100)
-              .attr("rx", 20)
-              .attr("ry", 10)
-              .style("fill", "lightblue");
-
-
   const nodes = [];
-  for(let i = 0; i < Object.keys(charFreq).length;  i++) {
-    let node = $("<div>");
-    node.addClass("freq-node");
-    let count = $("<div>");
-    count.addClass("freq-count");
-    let n = Object.values(charFreq)[i];
-    count.text(n);
-    let name = $("<div>");
-    name.addClass("freq-name");
-    name.text(Object.keys(charFreq)[i]);
-    node.append(name);
-    node.append(count);
-    node.css("order", -n);
-    nodes.push(node);
-  }
-  $(".freq-node-container").append(nodes);
+
+  let index = 0;
+  let intervalId = 0;
+  intervalId = setInterval(() => {
+    if (index < passage.length) {
+      update(dataFromCountObject(countObj(passage, index++)));
+    } else {
+      clearInterval(intervalId);
+    }
+  }, 5);
+
 
   // while (nodes.length > 1) {
   //
   // }
   // setTimeout(()=>{nodes[20].css("order", 0);}, 2000);
 });
+
+const update = (data) => {
+  let nodes = d3.select(".freq-node-container").selectAll(".freq-node").data(data, function(d) { return d.name; });
+
+  nodes.style("order", function(d) { return -1 * d.count; });
+  nodes.select(".freq-count").text(function(d) { return d.count; });
+
+  let enterSelection = nodes.enter().append("div").classed("freq-node", true);
+  enterSelection.append("div").classed("freq-name", true).text(function(d) { return d.name; });
+  enterSelection.append("div").classed("freq-count", true).text(function(d) { return d.count; });
+  enterSelection.style("order", function(d) { return -1 * d.count; });
+};
+
+const countObj = (txt, index) => {
+  const charFreq = {};
+
+  for(let i = 0; i <= index; i++) {
+    let c = passage.charAt(i);
+    if (charFreq.hasOwnProperty(c)) {
+      charFreq[c] += 1;
+    } else {
+      charFreq[c] = 1;
+    }
+  }
+  return charFreq;
+};
+
+const dataFromCountObject = (obj) => {
+  let keys = Object.keys(obj);
+  let data = [];
+  keys.forEach((key) => {
+    data.push({name: key, count: obj[key]});
+  });
+  return data;
+};

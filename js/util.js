@@ -18,3 +18,16 @@ const padEightBits = (bin) => {
   const numLeadingZeros = 8 - bin.length;
   return "0".repeat(numLeadingZeros).concat(bin);
 };
+
+const charToName = (ch) => {
+  switch (ch) {
+    case " ":
+      return "space";
+    case "\n":
+      return "newline";
+    case "\t":
+      return "tab";
+    default:
+      return ch;
+  }
+};
