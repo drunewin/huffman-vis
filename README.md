@@ -23,7 +23,7 @@ In addition, this project will include:
 
 This app will consist of a single screen with step controls to proceed through the algorithm, and nav links to the Github and my LinkedIn.
 
-[Wireframe](images/huffman.svg)
+[Wireframe](./images/huffman.svg)
 
 ### Architecture and Technologies
 
