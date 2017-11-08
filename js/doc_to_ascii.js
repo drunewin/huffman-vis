@@ -1,3 +1,5 @@
+// import { charBinAt, charToBin, stringToBin } from './util.js';
+
 const passage = `The last question was asked for the first time, half in jest, on May 21, 2061, at a time when humanity first stepped into the light. The question came about as a result of a five dollar bet over highballs, and it happened this way:
 Alexander Adell and Bertram Lupov were two of the faithful attendants of Multivac. As well as any human beings could, they knew what lay behind the cold, clicking, flashing face -- miles and miles of face -- of that giant computer. They had at least a vague notion of the general plan of relays and circuits that had long since grown past the point where any single human could possibly have a firm grasp of the whole.
 
@@ -27,55 +29,91 @@ Lupov put his fingers through his thinning hair as though to reassure himself th
 
 "Will, it will last our time, won't it?"`;
 
-const charFreq = {};
+const charBinAt = (str, idx) => {
+  return padEightBits(str.charCodeAt(idx).toString(2));
+};
 
-for(let i = 0; i < passage.length; i++) {
-  let c = passage.charAt(i);
-  if (charFreq.hasOwnProperty(c)) {
-    charFreq[c] += 1;
-  } else {
-    charFreq[c] = 1;
+const charToBin = (ch) => {
+  return padEightBits(ch.charCodeAt(0).toString(2));
+};
+
+const stringToBin = (str) => {
+  let binString = "";
+  for (let i = 0; i < str.length; i++) {
+    binString = binString.concat(charToBin(str.charAt(i)));
   }
-}
+  return binString;
+};
+
+const padEightBits = (bin) => {
+  const numLeadingZeros = 8 - bin.length;
+  return "0".repeat(numLeadingZeros).concat(bin);
+};
+
 
 $(() => {
-  const bodySelection = d3.select("body");
-  const svgSelection = bodySelection.append("svg")
-    .attr("width", "100%")
-    .attr("height", 100);
+  let index = 0;
+  setView(index);
+  let intervalId = 0;
+  intervalId = setInterval(() => {
+    if (index < passage.length) {
+      setView(index++);
 
-  let svg = svgSelection.append("rect")
-              .attr("x", 0)
-              .attr("y", 0)
-              .attr("width", 100)
-              .attr("height", 100)
-              .attr("rx", 20)
-              .attr("ry", 10)
-              .style("fill", "lightblue");
-
-  let doc = $(".text-doc");
-  doc.text(passage);
-
-  const nodes = [];
-  for(let i = 0; i < Object.keys(charFreq).length;  i++) {
-    let node = $("<div>");
-    node.addClass("freq-node");
-    let count = $("<div>");
-    count.addClass("freq-count");
-    let n = Object.values(charFreq)[i];
-    count.text(n);
-    let name = $("<div>");
-    name.addClass("freq-name");
-    name.text(Object.keys(charFreq)[i]);
-    node.append(name);
-    node.append(count);
-    node.css("order", -n);
-    nodes.push(node);
-  }
-  $(".freq-node-container").append(nodes);
-
-  // while (nodes.length > 1) {
+    } else {
+      clearInterval(intervalId);
+    }
+  }, 5);
+  // let textDoc = $(".text-doc");
+  // textDoc.text(passage);
   //
-  // }
-  // setTimeout(()=>{nodes[20].css("order", 0);}, 2000);
+  // let asciiDoc = $(".ascii-doc");
+  // asciiDoc.text();
 });
+
+const setView = (index) => {
+  let body = $('.docs-view');
+  // let textDoc = $(".text-doc");
+  // let asciiDoc = $(".ascii-doc");
+
+  let textDocContents = cursorTextDocHtml(passage, index);
+  let asciiDocContents = cursorAsciiDocHtml(passage, index);
+  // textDoc.html(textDocContents);
+  // asciiDoc.html(asciiDocContents);
+};
+
+const cursorTextDocHtml = (txt, charIndex) => {
+  const docHtml = $(".text-doc");
+  const pre = $("<span>");
+  pre.addClass("pre-text");
+  const cur = $("<span>");
+  cur.addClass("cursor");
+  const post = $("<span>");
+
+  pre.text(txt.substring(0, charIndex));
+  cur.text(txt.charAt(charIndex));
+  post.text(txt.substring(charIndex + 1));
+  docHtml.html(pre);
+  docHtml.append(cur);
+  docHtml.append(post);
+  return docHtml;
+};
+
+const cursorAsciiDocHtml = (txt, charIndex) => {
+  const docHtml = $(".ascii-doc");
+  const pre = $("<span>");
+  pre.addClass("pre-text");
+  const cur = $("<span>");
+  cur.addClass("cursor");
+  const post = $("<span>");
+
+  pre.text(stringToBin(txt.substring(0, charIndex)));
+  cur.text(charToBin(txt.charAt(charIndex)));
+  // post.text(txt.substring(charIndex + 1));
+
+  docHtml.html(pre);
+  docHtml.append(cur);
+  docHtml.append(post);
+
+  docHtml.scrollTop(docHtml[0].scrollHeight - 700);
+  return docHtml;
+};
