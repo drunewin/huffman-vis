@@ -29,6 +29,124 @@ Lupov put his fingers through his thinning hair as though to reassure himself th
 
 "Will, it will last our time, won't it?"`;
 
+const huffDict = {
+  "0":"01001100001",
+  "1":"0111110000",
+  "2":"00111100010",
+  "4":"001111011011",
+  "6":"01001100000",
+  " ":"000",
+  "e":"111",
+  "t":"0101",
+  "a":"0110",
+  "n":"1000",
+  "o":"1001",
+  "i":"1011",
+  "s":"1101",
+  "l":"00100",
+  "h":"00101",
+  "r":"00110",
+  "d":"01000",
+  "u":"10101",
+  "c":"11001",
+  "f":"001110",
+  "y":"010010",
+  "w":"011110",
+  "g":"011100",
+  ",":"011101",
+  "m":"101001",
+  "p":"110000",
+  "b":"110001",
+  ".":"0011111",
+  "v":"0100111",
+  "\n":"0111111",
+  "\"":"01001101",
+  "k":"01111101",
+  "A":"10100001",
+  "M":"10100010",
+  "T":"10100011",
+  "-":"001111010",
+  "q":"010011001",
+  "E":"011111001",
+  "j":"0011110000",
+  "'":"101000001",
+  "L":"0011110010",
+  "B":"0100110001",
+  "I":"1010000000",
+  "x":"1010000001",
+  "z":"0111110001",
+  "?":"00111101110",
+  "H":"00111101111",
+  "S":"001111001110",
+  "F":"001111011000",
+  "U":"001111001101",
+  "N":"001111001100",
+  "C":"001111011001",
+  "O":"001111000111",
+  "W":"001111000110",
+  ":":"001111011010",
+  "V":"001111001111",
+};
+
+const charFreq = {
+  "0":2,
+  "1":4,
+  "2":3,
+  "4":1,
+  "6":2,
+  "T":12,
+  "h":154,
+  "e":311,
+  " ":623,
+  "l":156,
+  "a":230,
+  "s":160,
+  "t":260,
+  "q":8,
+  "u":94,
+  "i":187,
+  "o":193,
+  "n":207,
+  "w":57,
+  "k":13,
+  "d":136,
+  "f":73,
+  "r":148,
+  "m":47,
+  ",":57,
+  "j":6,
+  "M":12,
+  "y":64,
+  "p":44,
+  "g":57,
+  ".":35,
+  "c":79,
+  "b":39,
+  "v":31,
+  ":":1,
+  "\n":27,
+  "A":12,
+  "x":3,
+  "B":4,
+  "L":5,
+  "-":9,
+  "I":3,
+  "C":1,
+  "'":6,
+  "F":1,
+  "V":1,
+  "E":7,
+  "z":3,
+  "S":1,
+  "U":1,
+  "\"":16,
+  "H":2,
+  "N":1,
+  "O":1,
+  "?":2,
+  "W":1
+};
+
 const charBinAt = (str, idx) => {
   return padEightBits(str.charCodeAt(idx).toString(2));
 };
@@ -37,16 +155,25 @@ const charToBin = (ch) => {
   return padEightBits(ch.charCodeAt(0).toString(2));
 };
 
-const stringToBin = (str) => {
+const stringToHuff = (str, dict) => {
   let binString = "";
   for (let i = 0; i < str.length; i++) {
-    binString = binString.concat(charToBin(str.charAt(i)));
+    binString = binString.concat(dict[str.charAt(i)]);
   }
   return binString;
 };
 
 const padEightBits = (bin) => {
   const numLeadingZeros = 8 - bin.length;
+  return "0".repeat(numLeadingZeros).concat(bin);
+};
+
+const padToNBIts = (bin, n) => {
+  const numLeadingZeros = n - bin.length;
+  if (numLeadingZeros < 0) {
+    // debugger
+    console.log(`bin: ${bin}\nnumBits: ${n}`);
+  }
   return "0".repeat(numLeadingZeros).concat(bin);
 };
 
@@ -62,23 +189,18 @@ $(() => {
     } else {
       clearInterval(intervalId);
     }
-  }, 1);
-  // let textDoc = $(".text-doc");
-  // textDoc.text(passage);
-  //
-  // let asciiDoc = $(".ascii-doc");
-  // asciiDoc.text();
+  }, 5);
+
+  let hh = getHuffHeader(huffDict, charFreq);
+  $(".huff-header").text(hh);
+  $(".huff-header-length").text(hh.length.toString());
 });
 
 const setView = (index) => {
   let body = $('.docs-view');
-  // let textDoc = $(".text-doc");
-  // let asciiDoc = $(".ascii-doc");
 
   let textDocContents = cursorTextDocHtml(passage, index);
   let asciiDocContents = cursorAsciiDocHtml(passage, index);
-  // textDoc.html(textDocContents);
-  // asciiDoc.html(asciiDocContents);
 };
 
 const cursorTextDocHtml = (txt, charIndex) => {
@@ -106,13 +228,11 @@ const cursorAsciiDocHtml = (txt, charIndex) => {
   cur.addClass("cursor");
   const post = $("<span>");
 
-  let pText = stringToBin(txt.substring(0, charIndex));
-  let cText = charToBin(txt.charAt(charIndex));
+  let pText = stringToHuff(txt.substring(0, charIndex), huffDict);
+  let cText = huffDict[txt.charAt(charIndex)];
+  $(".bit-count").text((pText.length + cText.length).toString());
   pre.text(pText);
   cur.text(cText);
-  // post.text(txt.substring(charIndex + 1));
-
-  $(".bit-count").text((pText.length + cText.length).toString());
 
   docHtml.html(pre);
   docHtml.append(cur);
@@ -121,3 +241,38 @@ const cursorAsciiDocHtml = (txt, charIndex) => {
   docHtml.scrollTop(docHtml[0].scrollHeight - 700);
   return docHtml;
 };
+
+const nToUBinInt = (num) => {
+  switch (num) {
+    case 0:
+      return "00";
+    case 1:
+      return "01";
+    case 2:
+      return "10";
+    case 3:
+      return "11";
+    default:
+      return nToUBinInt(Math.floor(num / 2)).concat((num % 2).toString());
+  }
+};
+
+const getHuffHeader = (dict, freq) => {
+  const headerElements = [];
+  let symbols = Object.keys(dict);
+  let fourByteLength = padToNBIts(nToUBinInt(symbols.length), 32);
+  headerElements.push(fourByteLength);
+
+  let fourByteFour = padToNBIts(nToUBinInt(4), 32);
+  headerElements.push(fourByteFour);
+
+  symbols.forEach(
+    (sym) => {
+      let fourByteFreq = padToNBIts(nToUBinInt(freq[sym]), 32);
+      headerElements.push(`${charToBin(sym)}${fourByteFreq}`);
+    }
+  );
+  return headerElements.join("");
+};
+
+// 36.0676723% compression
