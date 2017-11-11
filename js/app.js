@@ -56,8 +56,8 @@ $(() => {
 });
 
 const setAsciiListeners = () => {
-  player = new Player(setView);
-  $(".playback-rate").text(player.getFps());
+  player = new Player(setView, 3400);
+  player.stepForward();
 
   $(".play-btn").on("click", () => {
     player.play();
@@ -73,6 +73,12 @@ const setAsciiListeners = () => {
   });
   $(".faster-btn").on("click", ()=>{
     $(".playback-rate").text(player.speedUp(2));
+  });
+  $(".back-btn").on("click", ()=>{
+    player.stepBack();
+  });
+  $(".forward-btn").on("click", ()=>{
+    player.stepForward();
   });
 
 };

@@ -4,11 +4,32 @@ class Player {
     this.index = index || 0;
     this.timer = null;
     this.interval = interval || 500;
+    this.ended = false;
   }
 
   play() {
     if (!this.timer) {
-      this.timer = setInterval(() => this.iteration(this.index++), this.interval);
+      this.timer = setInterval(() => {
+        if (this.ended) {
+          this.pause();
+        } else {
+          this.ended = this.iteration(this.index++);
+        }
+      }, this.interval);
+    }
+  }
+
+  stepForward() {
+    if (!this.ended) {
+      this.pause();
+      this.ended = this.iteration(this.index++);
+    }
+  }
+
+  stepBack() {
+    if (this.index > -1) {
+      this.pause();
+      this.ended = this.iteration(--this.index);
     }
   }
 
@@ -21,7 +42,7 @@ class Player {
 
   slowDown(value) {
     if (this.interval === 1000) {
-      return;
+      return Math.floor(1000 / this.interval);
     }
     this.interval = Math.floor(this.interval * value);
     if (this.interval > 1000) {
@@ -35,12 +56,12 @@ class Player {
   }
 
   speedUp(value) {
-    if (this.interval === 1) {
-      return;
+    if (this.interval === 10) {
+      return Math.floor(1000 / this.interval);
     }
     this.interval = Math.floor(this.interval / value);
-    if (this.interval < 1) {
-      this.interval = 1;
+    if (this.interval < 10) {
+      this.interval = 10;
     }
     if (this.timer) {
       this.pause();
@@ -54,7 +75,7 @@ class Player {
       clearInterval(this.timer);
     }
     this.index = 0;
-    this.iteration(this.index);
+    this.ended = this.iteration(this.index);
   }
 
   setIteration(callback) {

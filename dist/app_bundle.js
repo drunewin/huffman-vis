@@ -131,8 +131,8 @@ $(function () {
 });
 
 var setAsciiListeners = function setAsciiListeners() {
-  player = new _player2.default(_doc_to_ascii.setView);
-  $(".playback-rate").text(player.getFps());
+  player = new _player2.default(_doc_to_ascii.setView, 3400);
+  player.stepForward();
 
   $(".play-btn").on("click", function () {
     player.play();
@@ -148,6 +148,12 @@ var setAsciiListeners = function setAsciiListeners() {
   });
   $(".faster-btn").on("click", function () {
     $(".playback-rate").text(player.speedUp(2));
+  });
+  $(".back-btn").on("click", function () {
+    player.stepBack();
+  });
+  $(".forward-btn").on("click", function () {
+    player.stepForward();
   });
 };
 
@@ -186,58 +192,49 @@ var padEightBits = function padEightBits(bin) {
   return "0".repeat(numLeadingZeros).concat(bin);
 };
 
-var startDocToAscii = exports.startDocToAscii = function startDocToAscii(offset) {
-  var index = offset;
-  setView(index);
-  var intervalId = 0;
-  intervalId = setInterval(function () {
-    if (index < passage.length) {
-      setView(index++);
-    } else {
-      clearInterval(intervalId);
-    }
-  }, 1);
-  return intervalId;
-};
-
-var pauseDocInterval = exports.pauseDocInterval = function pauseDocInterval(intervalId) {};
-
-// $(() => {
-//   let index = 0;
-//   setView(index);
-//   let intervalId = 0;
-//   intervalId = setInterval(() => {
-//     if (index < passage.length) {
-//       setView(index++);
-//
-//     } else {
-//       clearInterval(intervalId);
-//     }
-//   }, 1);
-// });
-
 var setView = exports.setView = function setView(index) {
-  var body = $('.docs-view');
+  // let body = $('.docs-view');
   // let textDoc = $(".text-doc");
   // let asciiDoc = $(".ascii-doc");
 
   var textDocContents = cursorTextDocHtml(passage, index);
   var asciiDocContents = cursorAsciiDocHtml(passage, index);
-  // textDoc.html(textDocContents);
-  // asciiDoc.html(asciiDocContents);
+
+  if (index <= -1) {
+    return true;
+  } else if (index > passage.length) {
+    return true;
+  } else {
+    return false;
+  }
 };
 
-var cursorTextDocHtml = function cursorTextDocHtml(txt, charIndex) {
+var cursorTextDocHtml = function cursorTextDocHtml(txt, charIndex, num) {
   var docHtml = $(".text-doc");
   var pre = $("<span>");
   pre.addClass("pre-text");
   var cur = $("<span>");
   cur.addClass("cursor");
   var post = $("<span>");
+  post.addClass("post-text");
 
-  var pText = txt.substring(0, charIndex);
-  var cText = txt.charAt(charIndex);
-  var postText = txt.substring(charIndex + 1);
+  var pText = void 0;
+  var cText = void 0;
+  var postText = void 0;
+
+  if (charIndex < 0) {
+    pText = "";
+    cText = txt.charAt(0);
+    postText = txt.substring(1);
+  } else if (charIndex < txt.length) {
+    pText = txt.substring(0, charIndex);
+    cText = txt.charAt(charIndex);
+    postText = txt.substring(charIndex + 1);
+  } else {
+    pText = txt.substring(0, charIndex);
+    cText = " ";
+    postText = "";
+  }
 
   pre.text(pText);
   cur.text(cText);
@@ -251,25 +248,26 @@ var cursorTextDocHtml = function cursorTextDocHtml(txt, charIndex) {
   return docHtml;
 };
 
-var cursorAsciiDocHtml = function cursorAsciiDocHtml(txt, charIndex) {
+var cursorAsciiDocHtml = function cursorAsciiDocHtml(txt, charIndex, num) {
   var docHtml = $(".bin-doc");
   var pre = $("<span>");
   pre.addClass("pre-text");
   var cur = $("<span>");
   cur.addClass("cursor");
   var post = $("<span>");
+  post.addClass("post-text");
 
   var pText = stringToBin(txt.substring(0, charIndex));
-  var cText = charToBin(txt.charAt(charIndex));
+  var cText = charIndex >= txt.length ? " " : charToBin(txt.charAt(charIndex));
   pre.text(pText);
   cur.text(cText);
-  // post.text(txt.substring(charIndex + 1));
+  post.text(txt.substring(charIndex + 1));
 
   $(".bit-count").text((pText.length + cText.length).toString());
 
   docHtml.html(pre);
   docHtml.append(cur);
-  docHtml.append(post);
+  // docHtml.append(post);
 
   docHtml.scrollTop(docHtml[0].scrollHeight - docHtml[0].clientHeight);
   return docHtml;
@@ -301,6 +299,7 @@ var Player = function () {
     this.index = index || 0;
     this.timer = null;
     this.interval = interval || 500;
+    this.ended = false;
   }
 
   _createClass(Player, [{
@@ -310,8 +309,28 @@ var Player = function () {
 
       if (!this.timer) {
         this.timer = setInterval(function () {
-          return _this.iteration(_this.index++);
+          if (_this.ended) {
+            _this.pause();
+          } else {
+            _this.ended = _this.iteration(_this.index++);
+          }
         }, this.interval);
+      }
+    }
+  }, {
+    key: "stepForward",
+    value: function stepForward() {
+      if (!this.ended) {
+        this.pause();
+        this.ended = this.iteration(this.index++);
+      }
+    }
+  }, {
+    key: "stepBack",
+    value: function stepBack() {
+      if (this.index > -1) {
+        this.pause();
+        this.ended = this.iteration(--this.index);
       }
     }
   }, {
@@ -326,7 +345,7 @@ var Player = function () {
     key: "slowDown",
     value: function slowDown(value) {
       if (this.interval === 1000) {
-        return;
+        return Math.floor(1000 / this.interval);
       }
       this.interval = Math.floor(this.interval * value);
       if (this.interval > 1000) {
@@ -341,12 +360,12 @@ var Player = function () {
   }, {
     key: "speedUp",
     value: function speedUp(value) {
-      if (this.interval === 1) {
-        return;
+      if (this.interval === 10) {
+        return Math.floor(1000 / this.interval);
       }
       this.interval = Math.floor(this.interval / value);
-      if (this.interval < 1) {
-        this.interval = 1;
+      if (this.interval < 10) {
+        this.interval = 10;
       }
       if (this.timer) {
         this.pause();
@@ -361,7 +380,7 @@ var Player = function () {
         clearInterval(this.timer);
       }
       this.index = 0;
-      this.iteration(this.index);
+      this.ended = this.iteration(this.index);
     }
   }, {
     key: "setIteration",

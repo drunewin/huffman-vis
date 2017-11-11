@@ -42,7 +42,7 @@
 }
 
 .pre-text {
-  background-color: yellow;
+  background-color: white;
   color: black;
 }
 
@@ -53,5 +53,5 @@
 
 .post-text {
   background-color: white;
-  color: black;
+  color: lightgray;
 }
