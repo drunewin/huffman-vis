@@ -5,14 +5,83 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto+Slab" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://d3js.org/d3.v4.min.js"></script>
-    <script src="./js/huff.js"></script>
-    <link rel="stylesheet" type="text/css" href="./css/huff.css">
+    <link rel="stylesheet" type="text/css" href="./css/impress.css">
+    <link rel="stylesheet" type="text/css" href="./css/docs.css">
     <title>Huffman Compression</title>
   </head>
   <body>
-  <div class="text-doc">
-  </div>
-  <div class="freq-node-container">
-  </div>
+    <div id="impress">
+
+
+      <div class="step" id="intro" data-x="0" data-y="0">
+        <p>What is Huffman encoding?</p>
+      </div>
+
+
+      <div class="step" id="ascii" data-x="2000" data-y="2000">
+          <div class="docs-view">
+            <div class="title-pane">
+              <h1>ASCII</h1>
+            </div>
+            <div class="text-doc">
+            </div>
+            <div class="bin-doc">
+            </div>
+            <div class="stats-pane">
+              Characters:
+              <span class="char-count">
+                0
+              </span>
+              <br>
+              Bits:
+              <span class="bit-count">
+                0
+              </span>
+              <br>
+              Chars per Second:
+              <span class="playback-rate">
+                0
+              </span>
+            </div>
+            <div class="ascii-controls">
+              <button type="button" class="slower-btn" name="button">&#9194;</button>
+              <button type="button" class="stop-btn" name="button">&#9632;</button>
+              <button type="button" class="pause-btn" name="button">&#9208;</button>
+              <button type="button" class="play-btn" name="button">&#9654;</button>
+              <button type="button" class="faster-btn" name="button">&#9193;</button>
+            </div>
+          </div>
+      </div>
+
+      <div class="step" id="third" data-x="1000" data-y="1000" data-z="-3000">
+          My third slide
+      </div>
+
+
+      <div class="step" id="fourth" data-x="1000" data-y="1000" data-z="6000">
+          My fourth slide
+      </div>
+
+      <div class="step" id="fif" data-x="-1000" data-y="-1000" data-rotate="270">
+          My fif slide
+      </div>
+
+
+    </div>
+
+
+    <div class="hint">
+      <p>Use a spacebar or arrow keys to navigate</p>
+    </div>
+    <script>
+      if ("ontouchstart" in document.documentElement) {
+          document.querySelector(".hint").innerHTML = "<p>Tap on the left or right to navigate</p>";
+      }
+    </script>
+
+
+    <script src="lib/impress.js"></script>
+    <script src="./dist/app_bundle.js"></script>
+    <!-- <script>impress().init();</script> -->
   </body>
 </html>

@@ -2,9 +2,13 @@
 var path = require('path');
 
 module.exports = {
-  entry: './js/make_tree.js',
+  entry: {
+    app: './js/app.js',
+    makeTree: './js/make_tree.js',
+  },
   output: {
-    filename: './js/bundle.js',
+    path: path.resolve(__dirname, 'dist'),
+    filename: '[name]_bundle.js'
   },
   module: {
     loaders: [

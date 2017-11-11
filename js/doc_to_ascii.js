@@ -50,9 +50,8 @@ const padEightBits = (bin) => {
   return "0".repeat(numLeadingZeros).concat(bin);
 };
 
-
-$(() => {
-  let index = 0;
+export const startDocToAscii = (offset) => {
+  let index = offset;
   setView(index);
   let intervalId = 0;
   intervalId = setInterval(() => {
@@ -63,14 +62,28 @@ $(() => {
       clearInterval(intervalId);
     }
   }, 1);
-  // let textDoc = $(".text-doc");
-  // textDoc.text(passage);
-  //
-  // let asciiDoc = $(".ascii-doc");
-  // asciiDoc.text();
-});
+  return intervalId;
+};
 
-const setView = (index) => {
+export const pauseDocInterval = (intervalId) => {
+
+};
+
+// $(() => {
+//   let index = 0;
+//   setView(index);
+//   let intervalId = 0;
+//   intervalId = setInterval(() => {
+//     if (index < passage.length) {
+//       setView(index++);
+//
+//     } else {
+//       clearInterval(intervalId);
+//     }
+//   }, 1);
+// });
+
+export const setView = (index) => {
   let body = $('.docs-view');
   // let textDoc = $(".text-doc");
   // let asciiDoc = $(".ascii-doc");
@@ -89,9 +102,16 @@ const cursorTextDocHtml = (txt, charIndex) => {
   cur.addClass("cursor");
   const post = $("<span>");
 
-  pre.text(txt.substring(0, charIndex));
-  cur.text(txt.charAt(charIndex));
-  post.text(txt.substring(charIndex + 1));
+  let pText = txt.substring(0, charIndex);
+  let cText = txt.charAt(charIndex);
+  let postText = txt.substring(charIndex + 1);
+
+  pre.text(pText);
+  cur.text(cText);
+  post.text(postText);
+
+  $(".char-count").text((pText.length + cText.length).toString());
+
   docHtml.html(pre);
   docHtml.append(cur);
   docHtml.append(post);
@@ -99,7 +119,7 @@ const cursorTextDocHtml = (txt, charIndex) => {
 };
 
 const cursorAsciiDocHtml = (txt, charIndex) => {
-  const docHtml = $(".ascii-doc");
+  const docHtml = $(".bin-doc");
   const pre = $("<span>");
   pre.addClass("pre-text");
   const cur = $("<span>");
@@ -118,6 +138,6 @@ const cursorAsciiDocHtml = (txt, charIndex) => {
   docHtml.append(cur);
   docHtml.append(post);
 
-  docHtml.scrollTop(docHtml[0].scrollHeight - 700);
+  docHtml.scrollTop(docHtml[0].scrollHeight - docHtml[0].clientHeight);
   return docHtml;
 };

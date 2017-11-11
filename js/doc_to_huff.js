@@ -189,7 +189,7 @@ $(() => {
     } else {
       clearInterval(intervalId);
     }
-  }, 5);
+  }, 500);
 
   let hh = getHuffHeader(huffDict, charFreq);
   $(".huff-header").text(hh);
@@ -221,7 +221,7 @@ const cursorTextDocHtml = (txt, charIndex) => {
 };
 
 const cursorAsciiDocHtml = (txt, charIndex) => {
-  const docHtml = $(".ascii-doc");
+  const docHtml = $(".bin-doc");
   const pre = $("<span>");
   pre.addClass("pre-text");
   const cur = $("<span>");
