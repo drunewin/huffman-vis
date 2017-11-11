@@ -79,7 +79,11 @@ class Player {
   }
 
   setIteration(callback) {
+    this.pause();
     this.iteration = callback;
+    this.index = 0;
+    this.interval = 500;
+    this.ended = false;
   }
 
   getFps() {

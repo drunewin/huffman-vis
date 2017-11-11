@@ -1,4 +1,5 @@
 import { startDocToAscii, setView } from './doc_to_ascii';
+import { update, setTreeTransformView } from './list_collapse';
 import Player from './player';
 
 const stepTimers =
@@ -43,20 +44,21 @@ $(() => {
     // debugger
     switch (presentStepId) {
       case "ascii":
-        setAsciiListeners();
+        setListeners(setView);
+        break;
+      case "table-transform":
+        setListeners(setTreeTransformView());
         break;
       default:
         break;
     }
   });
 
-
-
   impress().init();
 });
 
-const setAsciiListeners = () => {
-  player = new Player(setView, 3400);
+const setListeners = (iterationCb) => {
+  player = new Player(iterationCb, 0);
   player.stepForward();
 
   $(".play-btn").on("click", () => {

@@ -73,6 +73,8 @@
 
 var _doc_to_ascii = __webpack_require__(2);
 
+var _list_collapse = __webpack_require__(7);
+
 var _player = __webpack_require__(6);
 
 var _player2 = _interopRequireDefault(_player);
@@ -120,7 +122,10 @@ $(function () {
     // debugger
     switch (presentStepId) {
       case "ascii":
-        setAsciiListeners();
+        setListeners(_doc_to_ascii.setView);
+        break;
+      case "table-transform":
+        setListeners((0, _list_collapse.setTreeTransformView)());
         break;
       default:
         break;
@@ -130,8 +135,8 @@ $(function () {
   impress().init();
 });
 
-var setAsciiListeners = function setAsciiListeners() {
-  player = new _player2.default(_doc_to_ascii.setView, 3400);
+var setListeners = function setListeners(iterationCb) {
+  player = new _player2.default(iterationCb, 0);
   player.stepForward();
 
   $(".play-btn").on("click", function () {
@@ -245,6 +250,9 @@ var cursorTextDocHtml = function cursorTextDocHtml(txt, charIndex, num) {
   docHtml.html(pre);
   docHtml.append(cur);
   docHtml.append(post);
+
+  // docHtml.scrollTop(docHtml[0].scrollHeight - docHtml[0].clientHeight);
+
   return docHtml;
 };
 
@@ -385,7 +393,11 @@ var Player = function () {
   }, {
     key: "setIteration",
     value: function setIteration(callback) {
+      this.pause();
       this.iteration = callback;
+      this.index = 0;
+      this.interval = 500;
+      this.ended = false;
     }
   }, {
     key: "getFps",
@@ -398,6 +410,108 @@ var Player = function () {
 }();
 
 exports.default = Player;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var passage = "The last question was asked for the first time, half in jest, on May 21, 2061, at a time when humanity first stepped into the light. The question came about as a result of a five dollar bet over highballs, and it happened this way:\nAlexander Adell and Bertram Lupov were two of the faithful attendants of Multivac. As well as any human beings could, they knew what lay behind the cold, clicking, flashing face -- miles and miles of face -- of that giant computer. They had at least a vague notion of the general plan of relays and circuits that had long since grown past the point where any single human could possibly have a firm grasp of the whole.\n\nMultivac was self-adjusting and self-correcting. It had to be, for nothing human could adjust and correct it quickly enough or even adequately enough -- so Adell and Lupov attended the monstrous giant only lightly and superficially, yet as well as any men could. They fed it data, adjusted questions to its needs and translated the answers that were issued. Certainly they, and all others like them, were fully entitled to share In the glory that was Multivac's.\n\nFor decades, Multivac had helped design the ships and plot the trajectories that enabled man to reach the Moon, Mars, and Venus, but past that, Earth's poor resources could not support the ships. Too much energy was needed for the long trips. Earth exploited its coal and uranium with increasing efficiency, but there was only so much of both.\n\nBut slowly Multivac learned enough to answer deeper questions more fundamentally, and on May 14, 2061, what had been theory, became fact.\n\nThe energy of the sun was stored, converted, and utilized directly on a planet-wide scale. All Earth turned off its burning coal, its fissioning uranium, and flipped the switch that connected all of it to a small station, one mile in diameter, circling the Earth at half the distance of the Moon. All Earth ran by invisible beams of sunpower.\n\nSeven days had not sufficed to dim the glory of it and Adell and Lupov finally managed to escape from the public function, and to meet in quiet where no one would think of looking for them, in the deserted underground chambers, where portions of the mighty buried body of Multivac showed. Unattended, idling, sorting data with contented lazy clickings, Multivac, too, had earned its vacation and the boys appreciated that. They had no intention, originally, of disturbing it.\n\nThey had brought a bottle with them, and their only concern at the moment was to relax in the company of each other and the bottle.\n\n\"It's amazing when you think of it,\" said Adell. His broad face had lines of weariness in it, and he stirred his drink slowly with a glass rod, watching the cubes of ice slur clumsily about. \"All the energy we can possibly ever use for free. Enough energy, if we wanted to draw on it, to melt all Earth into a big drop of impure liquid iron, and still never miss the energy so used. All the energy we could ever use, forever and forever and forever.\"\n\nLupov cocked his head sideways. He had a trick of doing that when he wanted to be contrary, and he wanted to be contrary now, partly because he had had to carry the ice and glassware. \"Not forever,\" he said.\n\n\"Oh, hell, just about forever. Till the sun runs down, Bert.\"\n\n\"That's not forever.\"\n\n\"All right, then. Billions and billions of years. Twenty billion, maybe. Are you satisfied?\"\n\nLupov put his fingers through his thinning hair as though to reassure himself that some was still left and sipped gently at his own drink. \"Twenty billion years isn't forever.\"\n\n\"Will, it will last our time, won't it?\"";
+
+var charFreq = {};
+
+for (var i = 0; i < passage.length; i++) {
+  var c = passage.charAt(i);
+  if (charFreq.hasOwnProperty(c)) {
+    charFreq[c] += 1;
+  } else {
+    charFreq[c] = 1;
+  }
+}
+
+var setTreeTransformView = exports.setTreeTransformView = function setTreeTransformView() {
+  var data = dataFromCountObject(charFreq);
+  update(data);
+  return function () {
+    data = nextTreeState(data);
+    update(data);
+    if (data.length <= 1) {
+      return true;
+    }
+    return false;
+  };
+};
+
+var update = exports.update = function update(data) {
+  var nodes = d3.select(".freq-node-container").selectAll(".freq-node").data(data, function (d) {
+    return d.name;
+  });
+
+  nodes.style("order", function (d) {
+    return -1 * d.count;
+  });
+  nodes.select(".freq-count").text(function (d) {
+    return d.count;
+  });
+
+  var enterSelection = nodes.enter().append("div").classed("freq-node", true);
+  enterSelection.append("div").classed("freq-name", true).text(function (d) {
+    return d.name;
+  });
+  enterSelection.append("div").classed("freq-count", true).text(function (d) {
+    return d.count;
+  });
+  enterSelection.style("order", function (d) {
+    return -1 * d.count;
+  });
+
+  nodes.exit().remove();
+};
+
+var countObj = function countObj(txt, index) {
+  var charFreq = {};
+
+  for (var _i = 0; _i <= index; _i++) {
+    var _c = passage.charAt(_i);
+    if (charFreq.hasOwnProperty(_c)) {
+      charFreq[_c] += 1;
+    } else {
+      charFreq[_c] = 1;
+    }
+  }
+  return charFreq;
+};
+
+var dataCompare = function dataCompare(a, b) {
+  return b.count - a.count;
+};
+
+var dataFromCountObject = function dataFromCountObject(obj) {
+  var keys = Object.keys(obj);
+  var data = [];
+  keys.forEach(function (key) {
+    data.push({ name: key, count: obj[key] });
+  });
+  return data.sort(dataCompare);
+};
+
+var nextTreeState = exports.nextTreeState = function nextTreeState(data) {
+  var z = data.pop();
+  var y = data.pop();
+  var parent = { name: y.name.concat(z.name), count: y.count + z.count };
+  data.push(parent);
+
+  return data.sort(dataCompare);
+};
+
+var nodeCompare = function nodeCompare(a, b) {
+  return d3.descending(a.count, b.count);
+};
 
 /***/ })
 /******/ ]);

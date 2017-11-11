@@ -38,22 +38,20 @@ for(let i = 0; i < passage.length; i++) {
   }
 }
 
-$(() => {
+export const setTreeTransformView = () => {
   let data = dataFromCountObject(charFreq);
   update(data);
-  let index = 0;
-  let intervalId = 0;
-  intervalId = setInterval(() => {
-    if (data.length > 1) {
-      data = nextTreeState(data);
-      update(data);
-    } else {
-      clearInterval(intervalId);
+  return () => {
+    data = nextTreeState(data);
+    update(data);
+    if (data.length <= 1) {
+      return true;
     }
-  }, 500);
-});
+    return false;
+  }
+};
 
-const update = (data) => {
+export const update = (data) => {
   let nodes = d3.select(".freq-node-container").selectAll(".freq-node").data(data, function(d) { return d.name; });
 
   nodes.style("order", function(d) { return -1 * d.count; });
@@ -94,7 +92,7 @@ const dataFromCountObject = (obj) => {
   return data.sort(dataCompare);
 };
 
-const nextTreeState = (data) => {
+export const nextTreeState = (data) => {
   let z = data.pop();
   let y = data.pop();
   let parent = { name: y.name.concat(z.name), count: y.count + z.count };

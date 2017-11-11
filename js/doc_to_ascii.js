@@ -103,6 +103,9 @@ const cursorTextDocHtml = (txt, charIndex, num) => {
   docHtml.html(pre);
   docHtml.append(cur);
   docHtml.append(post);
+
+  // docHtml.scrollTop(docHtml[0].scrollHeight - docHtml[0].clientHeight);
+
   return docHtml;
 };
 
