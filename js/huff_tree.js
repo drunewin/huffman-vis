@@ -76,7 +76,10 @@ class HuffTree {
         return "translate(" + (d.parent ? d.x : source.x) + "," + (d.parent ? d.y : source.y) + ")";
       })
       .on("mouseover", showPath)
-      .on("mouseout", () => {this.update(this.root);});
+      .on("mouseout", () => {
+        this.update(this.root);
+        resetDisplayCode();
+      });
 
     nodeEnter.append('circle')
     .attr('class', 'node')
@@ -304,8 +307,13 @@ class HuffTree {
   }
 }
 
+const resetDisplayCode = () => {
+  $(".sym-name").text("Mouse over a node to see its Huffman code.");
+  $(".sym-code").text("");
+};
+
 const displayHuffmanCode = (name, code) => {
-  $(".sym-name").text(`${name}: `);
+  $(".sym-name").text(`${name}:`);
   $(".sym-code").text(code);
 };
 

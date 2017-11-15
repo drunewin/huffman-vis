@@ -3,14 +3,12 @@ var path = require('path');
 
 module.exports = {
   entry: {
-    app: './js/app.js',
-    makeTree: './js/make_tree.js',
     huff_nodes: './js/huff_nodes.js',
     huff_tree: './js/huff_tree.js',
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: '[name]_bundle.js'
+    filename: '[name].js'
   },
   module: {
     loaders: [

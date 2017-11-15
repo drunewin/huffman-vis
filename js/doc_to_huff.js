@@ -197,7 +197,6 @@ $(() => {
     }
   }, 500);
 
-  // let hh = getHuffHeader(huffDict, charFreq);
   // $(".huff-header").text(hh);
   // $(".huff-header-length").text(hh.length.toString());
 });
@@ -222,6 +221,9 @@ const thirdCursorTextDocHtml = (txt, charIndex) => {
   docHtml.html(pre);
   docHtml.append(cur);
   docHtml.append(post);
+
+  $(".char-count").text((charIndex + 1).toString());
+
   return docHtml;
 };
 
@@ -260,15 +262,16 @@ const cursorHuffDocHtml = (txt, charIndex) => {
 
   let pText = stringToHuff(txt.substring(0, charIndex), huffDict);
   let cText = huffDict[txt.charAt(charIndex)];
-  $(".huff-bit-count").text((pText.length + cText.length).toString());
+  $(".huff-bit-count").text((charIndex + 1 + hh.length).toString());
   pre.text(pText);
   cur.text(cText);
 
-  docHtml.html(pre);
+  docHtml.html(hh);
+  docHtml.append(pre);
   docHtml.append(cur);
   docHtml.append(post);
 
-  docHtml.scrollTop(docHtml[0].scrollHeight - 700);
+  docHtml.scrollTop(docHtml[0].scrollHeight - docHtml[0].clientHeight);
   return docHtml;
 };
 
@@ -304,5 +307,7 @@ const getHuffHeader = (dict, freq) => {
   );
   return headerElements.join("");
 };
+
+const hh = getHuffHeader(huffDict, charFreq);
 
 // 36.0676723% compression

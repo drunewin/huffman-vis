@@ -3,14 +3,15 @@
   <head>
     <meta charset="utf-8">
     <link href="https://fonts.googleapis.com/css?family=Gentium+Book+Basic" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="./js/nav.js"></script>
     <script src="./js/freq_table.js"></script>
     <script src="./js/huff_nodes.js"></script>
     <script src="./js/doc_to_huff.js"></script>
-    <script src="./dist/huff_nodes_bundle.js"></script>
-    <script src="./dist/huff_tree_bundle.js"></script>
+    <script src="./dist/huff_nodes.js"></script>
+    <script src="./dist/huff_tree.js"></script>
 
     <link rel="stylesheet" type="text/css" href="./css/main.css">
     <link rel="stylesheet" type="text/css" href="./css/viz.css">
@@ -131,7 +132,7 @@
         </div>
         <div class="sym-code-area">
           <div class="sym-name">
-
+            Mouse over a node to see its Huffman code.
           </div>
           <div class="sym-code">
 
@@ -144,32 +145,25 @@
       </p>
       <div class="tri-doc-vis">
         <div class="three-docs-view">
-          <div class="title-pane">
-            <h1>Text / ASCII / Huffman</h1>
-          </div>
           <div class="third-column">
             <div class="text-doc" id="text-doc-third">
             </div>
-          </div>
-          <div class="third-column">
-            <div class="bin-doc" id="bin-doc-third">
-            </div>
-          </div>
-          <div class="third-column">
-            <div class="huff-doc" id="huff-doc-third">
-            </div>
-          </div>
-          <div class="stats-pane">
             Characters:
             <span class="char-count">
               0
             </span>
-            <br>
+          </div>
+          <div class="third-column">
+            <div class="bin-doc" id="bin-doc-third">
+            </div>
             ASCII Bits:
             <span class="bit-count">
               0
             </span>
-            <br>
+          </div>
+          <div class="third-column">
+            <div class="huff-doc" id="huff-doc-third">
+            </div>
             Huffman Bits:
             <span class="huff-bit-count">
               0

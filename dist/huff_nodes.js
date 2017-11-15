@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 12);
+/******/ 	return __webpack_require__(__webpack_require__.s = 5);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -75,7 +75,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.rootToJson = exports.getCharFreq = undefined;
 
-var _penta_node_list = __webpack_require__(2);
+var _penta_node_list = __webpack_require__(1);
 
 var _penta_node_list2 = _interopRequireDefault(_penta_node_list);
 
@@ -156,49 +156,10 @@ var rootToJson = exports.rootToJson = function rootToJson(root) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.appData = undefined;
-
-var _util = __webpack_require__(0);
-
-var Util = _interopRequireWildcard(_util);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var appData = exports.appData = {
-  passage: "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-
-};
-
-var AppdData = function AppdData(text) {
-  _classCallCheck(this, AppdData);
-
-  this.text = text;
-  this.charFreq = Util.getCharFreq(this.text);
-  this.rootNode = {};
-  this.huffDict = {};
-  this.huffHeader = "";
-};
-
-appData["charFreq"] = Util.getCharFreq(appData.passage);
-appData["huffDict"] = {};
-appData["huffHeader"] = "";
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _penta_node = __webpack_require__(4);
+var _penta_node = __webpack_require__(3);
 
 var _penta_node2 = _interopRequireDefault(_penta_node);
 
@@ -354,7 +315,7 @@ var PentaNodeList = function () {
 exports.default = PentaNodeList;
 
 /***/ }),
-/* 3 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -363,89 +324,37 @@ exports.default = PentaNodeList;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.nextTreeState = exports.hierarchyFromData = exports.dataFromCountObject = exports.update = exports.setTreeTransformView = undefined;
+exports.appData = undefined;
 
-var _data = __webpack_require__(1);
+var _util = __webpack_require__(0);
 
-var passage = _data.appData.passage;
-var charFreq = _data.appData.charFreq;
+var Util = _interopRequireWildcard(_util);
 
-var setTreeTransformView = exports.setTreeTransformView = function setTreeTransformView() {
-  var data = dataFromCountObject(charFreq);
-  update(data);
-  return function () {
-    data = nextTreeState(data);
-    update(data);
-    if (data.length <= 1) {
-      return true;
-    }
-    return false;
-  };
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var appData = exports.appData = {
+  passage: "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+
 };
 
-var update = exports.update = function update(data) {
-  var nodes = d3.select(".freq-node-container").selectAll(".freq-node").data(data, function (d) {
-    return d.name;
-  });
+var AppdData = function AppdData(text) {
+  _classCallCheck(this, AppdData);
 
-  nodes.style("order", function (d) {
-    return -1 * d.count;
-  });
-  nodes.select(".freq-count").text(function (d) {
-    return d.count;
-  });
-
-  var enterSelection = nodes.enter().append("div").classed("freq-node", true);
-  enterSelection.append("div").classed("freq-name", true).text(function (d) {
-    return d.name;
-  });
-  enterSelection.append("div").classed("freq-count", true).text(function (d) {
-    return d.count;
-  });
-  enterSelection.style("order", function (d) {
-    return -1 * d.count;
-  });
-
-  nodes.exit().remove();
+  this.text = text;
+  this.charFreq = Util.getCharFreq(this.text);
+  this.rootNode = {};
+  this.huffDict = {};
+  this.huffHeader = "";
 };
 
-var dataCompare = function dataCompare(a, b) {
-  return b.count - a.count;
-};
-
-var dataFromCountObject = exports.dataFromCountObject = function dataFromCountObject(obj) {
-  var keys = Object.keys(obj);
-  var data = [];
-  keys.forEach(function (key) {
-    data.push({ name: key, count: obj[key] });
-  });
-  return data.sort(dataCompare);
-};
-
-var hierarchyFromData = exports.hierarchyFromData = function hierarchyFromData(data) {
-  switch (data.length) {
-    case 0:
-      return {};
-    default:
-      return {
-        name: data[0].name,
-        count: data[0].count,
-        children: [hierarchyFromData(data.slice(1))]
-      };
-  }
-};
-
-var nextTreeState = exports.nextTreeState = function nextTreeState(data) {
-  var z = data.pop();
-  var y = data.pop();
-  var parent = { name: y.name.concat(z.name), count: y.count + z.count };
-  data.push(parent);
-
-  return data.sort(dataCompare);
-};
+appData["charFreq"] = Util.getCharFreq(appData.passage);
+appData["huffDict"] = {};
+appData["huffHeader"] = "";
 
 /***/ }),
-/* 4 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -569,14 +478,98 @@ var PentaNode = function () {
 exports.default = PentaNode;
 
 /***/ }),
-/* 5 */,
-/* 6 */,
-/* 7 */,
-/* 8 */,
-/* 9 */,
-/* 10 */,
-/* 11 */,
-/* 12 */
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.nextTreeState = exports.hierarchyFromData = exports.dataFromCountObject = exports.update = exports.setTreeTransformView = undefined;
+
+var _data = __webpack_require__(2);
+
+var passage = _data.appData.passage;
+var charFreq = _data.appData.charFreq;
+
+var setTreeTransformView = exports.setTreeTransformView = function setTreeTransformView() {
+  var data = dataFromCountObject(charFreq);
+  update(data);
+  return function () {
+    data = nextTreeState(data);
+    update(data);
+    if (data.length <= 1) {
+      return true;
+    }
+    return false;
+  };
+};
+
+var update = exports.update = function update(data) {
+  var nodes = d3.select(".freq-node-container").selectAll(".freq-node").data(data, function (d) {
+    return d.name;
+  });
+
+  nodes.style("order", function (d) {
+    return -1 * d.count;
+  });
+  nodes.select(".freq-count").text(function (d) {
+    return d.count;
+  });
+
+  var enterSelection = nodes.enter().append("div").classed("freq-node", true);
+  enterSelection.append("div").classed("freq-name", true).text(function (d) {
+    return d.name;
+  });
+  enterSelection.append("div").classed("freq-count", true).text(function (d) {
+    return d.count;
+  });
+  enterSelection.style("order", function (d) {
+    return -1 * d.count;
+  });
+
+  nodes.exit().remove();
+};
+
+var dataCompare = function dataCompare(a, b) {
+  return b.count - a.count;
+};
+
+var dataFromCountObject = exports.dataFromCountObject = function dataFromCountObject(obj) {
+  var keys = Object.keys(obj);
+  var data = [];
+  keys.forEach(function (key) {
+    data.push({ name: key, count: obj[key] });
+  });
+  return data.sort(dataCompare);
+};
+
+var hierarchyFromData = exports.hierarchyFromData = function hierarchyFromData(data) {
+  switch (data.length) {
+    case 0:
+      return {};
+    default:
+      return {
+        name: data[0].name,
+        count: data[0].count,
+        children: [hierarchyFromData(data.slice(1))]
+      };
+  }
+};
+
+var nextTreeState = exports.nextTreeState = function nextTreeState(data) {
+  var z = data.pop();
+  var y = data.pop();
+  var parent = { name: y.name.concat(z.name), count: y.count + z.count };
+  data.push(parent);
+
+  return data.sort(dataCompare);
+};
+
+/***/ }),
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -588,15 +581,15 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _penta_node_list = __webpack_require__(2);
+var _penta_node_list = __webpack_require__(1);
 
 var _penta_node_list2 = _interopRequireDefault(_penta_node_list);
 
 var _util = __webpack_require__(0);
 
-var _data = __webpack_require__(1);
+var _data = __webpack_require__(2);
 
-var _list_collapse = __webpack_require__(3);
+var _list_collapse = __webpack_require__(4);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -608,15 +601,16 @@ var charFreq = _data.appData.charFreq;
 
 $(function () {
   var linkedList = new _penta_node_list2.default(charFreq);
-  linkedList.getPentaNodeTree();
-  var treeView = new HuffTree(linkedList, 789, 450);
+  var treeView = new HuffmanTreeView(linkedList, 800, 677);
 });
 
-var HuffTree = function () {
-  function HuffTree(data, width, height) {
-    _classCallCheck(this, HuffTree);
+var HuffmanTreeView = function () {
+  function HuffmanTreeView(data, width, height) {
+    var _this = this;
 
-    this.svg = d3.select("#huff-tree-done").append("svg").attr("width", width).attr("height", height).append("g").attr("transform", "translate(" + "0" + "," + "20" + ")");
+    _classCallCheck(this, HuffmanTreeView);
+
+    this.svg = d3.select("#huff-nodes").append("svg").attr("width", width).attr("height", height).append("g").attr("transform", "translate(" + "0" + "," + "20" + ")");
 
     this.width = width;
     this.height = height;
@@ -639,9 +633,22 @@ var HuffTree = function () {
     this.collapsed = [];
 
     this.update(this.root);
+    var timer = setInterval(function () {
+      _this.root = d3.hierarchy(data.nextMorphState(), function (d) {
+        return d.children;
+      });
+
+      _this.root.x0 = width / 2;
+      _this.root.y0 = 0;
+      _this.update(_this.root);
+      if (data.isTree()) {
+        clearInterval(timer);
+        console.log("interval cleared");
+      }
+    }, 1000);
   }
 
-  _createClass(HuffTree, [{
+  _createClass(HuffmanTreeView, [{
     key: 'numLeaves',
     value: function numLeaves() {
       return this.leaves.length;
@@ -654,8 +661,6 @@ var HuffTree = function () {
   }, {
     key: 'update',
     value: function update(source, index) {
-      var _this = this;
-
       var treeData = this.treemap(this.root);
       var nodes = treeData.descendants();
       var links = treeData.descendants().slice(1);
@@ -667,15 +672,19 @@ var HuffTree = function () {
       var node = this.svg.selectAll("g.node").data(nodes, function (d) {
         // debugger
         // console.log(this.i);
-        return d.id || (d.id = ++_this.i);
+        // return d.id || (d.id = ++this.i);
+        return d.id || (d.id = d.name);
+        // return d.name;
       });
 
       var nodeEnter = node.enter().append("g").attr("class", "node").attr("transform", function (d) {
         // console.log(d);
         return "translate(" + (d.parent ? d.x : source.x) + "," + (d.parent ? d.y : source.y) + ")";
-      }).on("mouseover", showPath).on("mouseout", function () {
-        _this.update(_this.root);
-      });
+      })
+      // ;
+      .on("click", click.bind(this));
+      // .on("click", showPath.bind(this));
+      // .on("click", hideOthers.bind(this));
 
       nodeEnter.append('circle').attr('class', 'node').attr('r', 1e-6).style("fill", function (d) {
         return d.children || d._children ? "lightsteelblue" : "#fff";
@@ -686,19 +695,22 @@ var HuffTree = function () {
       }).attr("text-anchor", function (d) {
         return d.children || d._children ? "end" : "start";
       }).text(function (d) {
-        if (!d.height) {
-          switch (d.data.name) {
-            case " ":
-              return "[space]";
-            case "\n":
-              return "\n";
-            default:
-              return d.data.name;
-          }
-        } else {
-          return "";
-        }
+        return d.data.name.length > 1 ? d.data.count : d.data.name;
       });
+      // .text(function(d) {
+      //   if (!d.height) {
+      //     switch (d.data.name) {
+      //       case " ":
+      //         return "[space]";
+      //       case "\n":
+      //         return "\n";
+      //       default:
+      //         return d.data.name;
+      //     }
+      //   } else {
+      //     return "";
+      //   }
+      // });
 
       var nodeUpdate = nodeEnter.merge(node);
 
@@ -758,9 +770,39 @@ var HuffTree = function () {
 
       // Creates a curved (diagonal) path from parent to the child nodes
       function diagonal(s, d) {
+        // ${(s.x + d.x) / 2} ${s.y},
+        // ${(s.x + d.x) / 2} ${d.y},
         var path = 'M ' + s.x + ' ' + s.y + '\n      L\n      ' + d.x + ' ' + d.y;
 
         return path;
+      }
+
+      function collapse(d) {
+        if (d.children) {
+          d._children = d.children;
+          d._children.forEach(collapse);
+          d.children = null;
+        }
+      }
+
+      function expand(d) {
+        if (d._children) {
+          d.children = d._children;
+          d.children.forEach(expand);
+          d._children = null;
+        }
+      }
+
+      // Toggle children on click.
+      function click(d) {
+        if (d.children) {
+          d._children = d.children;
+          d.children = null;
+        } else {
+          d.children = d._children;
+          d._children = null;
+        }
+        this.update(d);
       }
 
       // Highlight node's path
@@ -770,37 +812,75 @@ var HuffTree = function () {
         var ids = d.ancestors().map(function (n) {
           return n.id;
         });
-        console.log(ids);
         var c = d3.selectAll("circle.node");
         console.log(ids);
         c.filter(function (f) {
           return ids.includes(f.id);
         }).style("fill", "yellow");
-        console.log(getHuffmanCode(d));
-        displayHuffmanCode(d.data.name, getHuffmanCode(d));
+        // this.update(this.root);
       }
 
-      // Return tree node's Huffman code
-      function getHuffmanCode(d) {
-        // debugger
-        var path = [];
-        var fromRoot = d.ancestors().reverse();
-        for (var i = 1; i < fromRoot.length; i++) {
-          if (fromRoot[i - 1].children[0] === fromRoot[i]) {
-            path.push("0");
-          } else {
-            path.push("1");
-          }
-        }
-        console.log(path.join(""));
-        console.log(d);
-        return path.join("");
+      function hideOthers(d) {
+        var _this2 = this;
+
+        var ids = d.ancestors().map(function (n) {
+          return n.id;
+        });
+        var c = d3.selectAll("circle.node");
+        // c.filter((f) => {
+        //   return ids.includes(f.id);
+        // }).style("fill",  "yellow");
+        c.filter(function (g) {
+          return !ids.includes(g.id);
+        }).each(function (h) {
+          _this2.collapsed.push(h);
+          collapse(h);
+        });
+        this.update(this.root);
       }
+
+      function expandCollapsed() {
+        while (this.collapsed.length > 0) {
+          expand.bind(this)(this.collapsed.pop());
+        }
+      }
+
+      if (index) {
+        if (index % 2 === 0) {
+          expandCollapsed.bind(this)();
+        } else {
+          // debugger
+          hideOthers.bind(this)(this.leaves[Math.floor(index / 2)]);
+          showPath.bind(this)(this.leaves[Math.floor(index / 2)]);
+          console.log(this.leaves[Math.floor(index / 2)]);
+          this.highlightRow(this.leaves[Math.floor(index / 2)].data.name);
+        }
+      }
+    }
+
+    // Return tree node's Huffman code
+
+  }, {
+    key: 'getHuffmanCode',
+    value: function getHuffmanCode(d) {
+      // debugger
+      var path = [];
+      var fromRoot = d.ancestors().reverse();
+      for (var i = 1; i < fromRoot.length; i++) {
+        if (fromRoot[i - 1].children[0] === fromRoot[i]) {
+          path.push("0");
+        } else {
+          path.push("1");
+        }
+      }
+      console.log(path.join(""));
+      console.log(d);
+      return path.join("");
     }
   }, {
     key: 'getHuffmanCodeTable',
     value: function getHuffmanCodeTable(r) {
-      var _this2 = this;
+      var _this3 = this;
 
       var huffmanTable = [];
       var leafNodes = r.leaves();
@@ -809,7 +889,7 @@ var HuffTree = function () {
         // debugger
         huffmanTable.push({
           symbol: leaf.data.name,
-          hCode: _this2.getHuffmanCode(leaf),
+          hCode: _this3.getHuffmanCode(leaf),
           frequency: leaf.data.count,
           node: leaf
         });
@@ -875,16 +955,11 @@ var HuffTree = function () {
     }
   }]);
 
-  return HuffTree;
+  return HuffmanTreeView;
 }();
 
-var displayHuffmanCode = function displayHuffmanCode(name, code) {
-  $(".sym-name").text(name + ': ');
-  $(".sym-code").text(code);
-};
-
-exports.default = HuffTree;
+exports.default = HuffmanTreeView;
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=huff_tree_bundle.js.map
+//# sourceMappingURL=huff_nodes.js.map
