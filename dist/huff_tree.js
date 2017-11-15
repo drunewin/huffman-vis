@@ -606,6 +606,9 @@ $(function () {
   var treeView = new HuffTree(linkedList, 789, 450);
 });
 
+// Code for creating and drawing tree modified from:
+// http://bl.ocks.org/d3noob/8375092
+
 var HuffTree = function () {
   function HuffTree(data, width, height) {
     _classCallCheck(this, HuffTree);
@@ -812,11 +815,6 @@ var HuffTree = function () {
       return huffmanTable;
     }
   }, {
-    key: 'huffCodeSort',
-    value: function huffCodeSort(a, b) {
-      b.frequency - a.frequency;
-    }
-  }, {
     key: 'highlightRow',
     value: function highlightRow(name) {
       d3.select(".huff-table-body").selectAll("tr").filter(function (row) {
@@ -830,48 +828,18 @@ var HuffTree = function () {
         return row["symbol"] === name;
       }).style("background-color", "yellow");
     }
-  }, {
-    key: 'tabulate',
-    value: function tabulate(data, columns) {
-      var table = d3.select("#huff-table").append("table").classed("huff-code-lookup", true);
-      var thead = table.append("thead");
-      var tbody = table.append("tbody").classed("huff-table-body", true);
-
-      // append header row
-      thead.append("tr").selectAll("th").data(columns).enter().append("th").text(function (column) {
-        return column;
-      });
-
-      // append rows for each Object
-      var rows = tbody.selectAll("tr").data(data).enter().append("tr");
-
-      // create cells
-      var cells = rows.selectAll("td").data(function (row) {
-        return columns.map(function (column) {
-          return {
-            column: column,
-            value: row[column]
-          };
-        });
-      }).enter().append("td").text(function (d) {
-        return d.value;
-      });
-
-      return table;
-    }
-  }, {
-    key: 'huffDictionaryFromData',
-    value: function huffDictionaryFromData(data) {
-      var dict = {};
-      data.forEach(function (datum) {
-        dict[datum.symbol.toString()] = datum.hCode;
-      });
-      return dict;
-    }
   }]);
 
   return HuffTree;
 }();
+
+var huffDictionaryFromData = function huffDictionaryFromData(data) {
+  var dict = {};
+  data.forEach(function (datum) {
+    dict[datum.symbol.toString()] = datum.hCode;
+  });
+  return dict;
+};
 
 var resetDisplayCode = function resetDisplayCode() {
   $(".sym-name").text("Mouse over a node to see its Huffman code.");

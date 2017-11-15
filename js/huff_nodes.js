@@ -12,6 +12,9 @@ $(() => {
   let treeView = new HuffmanTreeView(linkedList, 800, 677);
 });
 
+// Code for creating and drawing tree modified from:
+// http://bl.ocks.org/d3noob/8375092
+
 class HuffmanTreeView {
   constructor(data, width, height) {
     this.svg = d3.select("#huff-nodes").append("svg")
@@ -75,24 +78,16 @@ class HuffmanTreeView {
 
     let node = this.svg.selectAll("g.node")
       .data(nodes, (d) => {
-        // debugger
-        // console.log(this.i);
-        // return d.id || (d.id = ++this.i);
         return d.id || (d.id = d.name);
-        // return d.name;
       });
 
     let nodeEnter = node.enter()
       .append("g")
       .attr("class", "node")
       .attr("transform", function(d) {
-        // console.log(d);
         return "translate(" + (d.parent ? d.x : source.x) + "," + (d.parent ? d.y : source.y) + ")";
       })
-      // ;
       .on("click", click.bind(this));
-      // .on("click", showPath.bind(this));
-      // .on("click", hideOthers.bind(this));
 
     nodeEnter.append('circle')
     .attr('class', 'node')
@@ -112,20 +107,6 @@ class HuffmanTreeView {
     .text(function(d) {
       return d.data.name.length > 1 ? d.data.count : d.data.name;
     });
-    // .text(function(d) {
-    //   if (!d.height) {
-    //     switch (d.data.name) {
-    //       case " ":
-    //         return "[space]";
-    //       case "\n":
-    //         return "\n";
-    //       default:
-    //         return d.data.name;
-    //     }
-    //   } else {
-    //     return "";
-    //   }
-    // });
 
     var nodeUpdate = nodeEnter.merge(node);
 
@@ -200,30 +181,11 @@ class HuffmanTreeView {
 
     // Creates a curved (diagonal) path from parent to the child nodes
     function diagonal(s, d) {
-      // ${(s.x + d.x) / 2} ${s.y},
-      // ${(s.x + d.x) / 2} ${d.y},
       let path = `M ${s.x} ${s.y}
       L
       ${d.x} ${d.y}`;
 
       return path;
-    }
-
-
-    function collapse(d) {
-      if(d.children) {
-        d._children = d.children;
-        d._children.forEach(collapse);
-        d.children = null;
-      }
-    }
-
-    function expand(d) {
-      if(d._children) {
-        d.children = d._children;
-        d.children.forEach(expand);
-        d._children = null;
-      }
     }
 
     // Toggle children on click.
@@ -237,152 +199,6 @@ class HuffmanTreeView {
       }
       this.update(d);
     }
-
-
-    // Highlight node's path
-    function showPath(d) {
-      console.log("showing path");
-      // debugger
-      let ids = d.ancestors().map((n) => n.id);
-      let c = d3.selectAll("circle.node");
-      console.log(ids);
-      c.filter((f) => {
-        return ids.includes(f.id);
-      }).style("fill", "yellow");
-      // this.update(this.root);
-    }
-
-    function hideOthers(d) {
-      let ids = d.ancestors().map((n) => n.id);
-      let c = d3.selectAll("circle.node");
-      // c.filter((f) => {
-      //   return ids.includes(f.id);
-      // }).style("fill",  "yellow");
-      c.filter((g) => {
-        return !(ids.includes(g.id));
-      }).each((h) => {
-        this.collapsed.push(h);
-        collapse(h);
-      });
-      this.update(this.root);
-    }
-
-    function expandCollapsed() {
-      while (this.collapsed.length > 0) {
-        expand.bind(this)(this.collapsed.pop());
-      }
-    }
-
-    if (index) {
-      if (index % 2 === 0) {
-        expandCollapsed.bind(this)();
-      } else {
-        // debugger
-        hideOthers.bind(this)(this.leaves[Math.floor(index / 2)]);
-        showPath.bind(this)(this.leaves[Math.floor(index / 2)]);
-        console.log(this.leaves[Math.floor(index / 2)]);
-        this.highlightRow(this.leaves[Math.floor(index/2)].data.name);
-      }
-    }
-  }
-
-  // Return tree node's Huffman code
-  getHuffmanCode(d) {
-    // debugger
-    const path = [];
-    const fromRoot = d.ancestors().reverse();
-    for(let i = 1; i < fromRoot.length; i++) {
-      if(fromRoot[i - 1].children[0] === fromRoot[i]) {
-        path.push("0");
-      } else {
-        path.push("1");
-      }
-    }
-    console.log(path.join(""));
-    console.log(d);
-    return path.join("");
-  }
-
-  getHuffmanCodeTable(r) {
-    const huffmanTable = [];
-    let leafNodes = r.leaves();
-    // debugger
-    leafNodes.forEach(
-      (leaf) => {
-        // debugger
-        huffmanTable.push(
-          {
-            symbol: leaf.data.name,
-            hCode: this.getHuffmanCode(leaf),
-            frequency: leaf.data.count,
-            node: leaf,
-          }
-        );
-      }
-    );
-    return huffmanTable;
-  }
-
-  huffCodeSort(a, b) {
-    (b.frequency - a.frequency);
-  }
-
-  highlightRow(name) {
-    d3.select(".huff-table-body").selectAll("tr").filter(function(row) {
-      console.log(row);
-      // return true;
-      return row["symbol"] !== name;
-    }).style("background-color", "white");
-    d3.select(".huff-table-body").selectAll("tr").filter(function(row) {
-      console.log(row);
-      // return true;
-      return row["symbol"] === name;
-    }).style("background-color", "yellow");
-  }
-
-  tabulate (data, columns) {
-    let table = d3.select("#huff-table").append("table").classed("huff-code-lookup", true);
-    let thead = table.append("thead");
-    let tbody = table.append("tbody").classed("huff-table-body", true);
-
-    // append header row
-    thead.append("tr")
-      .selectAll("th")
-      .data(columns).enter()
-        .append("th")
-        .text(column => column);
-
-    // append rows for each Object
-    let rows = tbody.selectAll("tr")
-      .data(data).enter()
-        .append("tr");
-
-    // create cells
-    let cells = rows.selectAll("td")
-      .data(function (row) {
-              return columns.map(
-                column => ({
-                  column: column,
-                  value: row[column],
-                })
-              );
-            }
-          )
-          .enter()
-          .append("td")
-            .text(d => d.value);
-
-    return table;
-  }
-
-  huffDictionaryFromData (data) {
-    const dict = {};
-    data.forEach(
-      (datum) => {
-        dict[datum.symbol.toString()] = datum.hCode;
-      }
-    );
-    return dict;
   }
 }
 

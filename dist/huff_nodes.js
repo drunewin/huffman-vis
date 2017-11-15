@@ -604,6 +604,9 @@ $(function () {
   var treeView = new HuffmanTreeView(linkedList, 800, 677);
 });
 
+// Code for creating and drawing tree modified from:
+// http://bl.ocks.org/d3noob/8375092
+
 var HuffmanTreeView = function () {
   function HuffmanTreeView(data, width, height) {
     var _this = this;
@@ -670,21 +673,12 @@ var HuffmanTreeView = function () {
       });
 
       var node = this.svg.selectAll("g.node").data(nodes, function (d) {
-        // debugger
-        // console.log(this.i);
-        // return d.id || (d.id = ++this.i);
         return d.id || (d.id = d.name);
-        // return d.name;
       });
 
       var nodeEnter = node.enter().append("g").attr("class", "node").attr("transform", function (d) {
-        // console.log(d);
         return "translate(" + (d.parent ? d.x : source.x) + "," + (d.parent ? d.y : source.y) + ")";
-      })
-      // ;
-      .on("click", click.bind(this));
-      // .on("click", showPath.bind(this));
-      // .on("click", hideOthers.bind(this));
+      }).on("click", click.bind(this));
 
       nodeEnter.append('circle').attr('class', 'node').attr('r', 1e-6).style("fill", function (d) {
         return d.children || d._children ? "lightsteelblue" : "#fff";
@@ -697,20 +691,6 @@ var HuffmanTreeView = function () {
       }).text(function (d) {
         return d.data.name.length > 1 ? d.data.count : d.data.name;
       });
-      // .text(function(d) {
-      //   if (!d.height) {
-      //     switch (d.data.name) {
-      //       case " ":
-      //         return "[space]";
-      //       case "\n":
-      //         return "\n";
-      //       default:
-      //         return d.data.name;
-      //     }
-      //   } else {
-      //     return "";
-      //   }
-      // });
 
       var nodeUpdate = nodeEnter.merge(node);
 
@@ -770,27 +750,9 @@ var HuffmanTreeView = function () {
 
       // Creates a curved (diagonal) path from parent to the child nodes
       function diagonal(s, d) {
-        // ${(s.x + d.x) / 2} ${s.y},
-        // ${(s.x + d.x) / 2} ${d.y},
         var path = 'M ' + s.x + ' ' + s.y + '\n      L\n      ' + d.x + ' ' + d.y;
 
         return path;
-      }
-
-      function collapse(d) {
-        if (d.children) {
-          d._children = d.children;
-          d._children.forEach(collapse);
-          d.children = null;
-        }
-      }
-
-      function expand(d) {
-        if (d._children) {
-          d.children = d._children;
-          d.children.forEach(expand);
-          d._children = null;
-        }
       }
 
       // Toggle children on click.
@@ -804,154 +766,6 @@ var HuffmanTreeView = function () {
         }
         this.update(d);
       }
-
-      // Highlight node's path
-      function showPath(d) {
-        console.log("showing path");
-        // debugger
-        var ids = d.ancestors().map(function (n) {
-          return n.id;
-        });
-        var c = d3.selectAll("circle.node");
-        console.log(ids);
-        c.filter(function (f) {
-          return ids.includes(f.id);
-        }).style("fill", "yellow");
-        // this.update(this.root);
-      }
-
-      function hideOthers(d) {
-        var _this2 = this;
-
-        var ids = d.ancestors().map(function (n) {
-          return n.id;
-        });
-        var c = d3.selectAll("circle.node");
-        // c.filter((f) => {
-        //   return ids.includes(f.id);
-        // }).style("fill",  "yellow");
-        c.filter(function (g) {
-          return !ids.includes(g.id);
-        }).each(function (h) {
-          _this2.collapsed.push(h);
-          collapse(h);
-        });
-        this.update(this.root);
-      }
-
-      function expandCollapsed() {
-        while (this.collapsed.length > 0) {
-          expand.bind(this)(this.collapsed.pop());
-        }
-      }
-
-      if (index) {
-        if (index % 2 === 0) {
-          expandCollapsed.bind(this)();
-        } else {
-          // debugger
-          hideOthers.bind(this)(this.leaves[Math.floor(index / 2)]);
-          showPath.bind(this)(this.leaves[Math.floor(index / 2)]);
-          console.log(this.leaves[Math.floor(index / 2)]);
-          this.highlightRow(this.leaves[Math.floor(index / 2)].data.name);
-        }
-      }
-    }
-
-    // Return tree node's Huffman code
-
-  }, {
-    key: 'getHuffmanCode',
-    value: function getHuffmanCode(d) {
-      // debugger
-      var path = [];
-      var fromRoot = d.ancestors().reverse();
-      for (var i = 1; i < fromRoot.length; i++) {
-        if (fromRoot[i - 1].children[0] === fromRoot[i]) {
-          path.push("0");
-        } else {
-          path.push("1");
-        }
-      }
-      console.log(path.join(""));
-      console.log(d);
-      return path.join("");
-    }
-  }, {
-    key: 'getHuffmanCodeTable',
-    value: function getHuffmanCodeTable(r) {
-      var _this3 = this;
-
-      var huffmanTable = [];
-      var leafNodes = r.leaves();
-      // debugger
-      leafNodes.forEach(function (leaf) {
-        // debugger
-        huffmanTable.push({
-          symbol: leaf.data.name,
-          hCode: _this3.getHuffmanCode(leaf),
-          frequency: leaf.data.count,
-          node: leaf
-        });
-      });
-      return huffmanTable;
-    }
-  }, {
-    key: 'huffCodeSort',
-    value: function huffCodeSort(a, b) {
-      b.frequency - a.frequency;
-    }
-  }, {
-    key: 'highlightRow',
-    value: function highlightRow(name) {
-      d3.select(".huff-table-body").selectAll("tr").filter(function (row) {
-        console.log(row);
-        // return true;
-        return row["symbol"] !== name;
-      }).style("background-color", "white");
-      d3.select(".huff-table-body").selectAll("tr").filter(function (row) {
-        console.log(row);
-        // return true;
-        return row["symbol"] === name;
-      }).style("background-color", "yellow");
-    }
-  }, {
-    key: 'tabulate',
-    value: function tabulate(data, columns) {
-      var table = d3.select("#huff-table").append("table").classed("huff-code-lookup", true);
-      var thead = table.append("thead");
-      var tbody = table.append("tbody").classed("huff-table-body", true);
-
-      // append header row
-      thead.append("tr").selectAll("th").data(columns).enter().append("th").text(function (column) {
-        return column;
-      });
-
-      // append rows for each Object
-      var rows = tbody.selectAll("tr").data(data).enter().append("tr");
-
-      // create cells
-      var cells = rows.selectAll("td").data(function (row) {
-        return columns.map(function (column) {
-          return {
-            column: column,
-            value: row[column]
-          };
-        });
-      }).enter().append("td").text(function (d) {
-        return d.value;
-      });
-
-      return table;
-    }
-  }, {
-    key: 'huffDictionaryFromData',
-    value: function huffDictionaryFromData(data) {
-      var dict = {};
-      data.forEach(function (datum) {
-        dict[datum.symbol.toString()] = datum.hCode;
-      });
-      return dict;
     }
   }]);
 

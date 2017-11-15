@@ -196,9 +196,6 @@ $(() => {
       clearInterval(intervalId);
     }
   }, 500);
-
-  // $(".huff-header").text(hh);
-  // $(".huff-header-length").text(hh.length.toString());
 });
 
 const setView = (index) => {

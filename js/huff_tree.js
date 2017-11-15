@@ -13,6 +13,9 @@ $(() => {
   let treeView = new HuffTree(linkedList, 789, 450);
 });
 
+// Code for creating and drawing tree modified from:
+// http://bl.ocks.org/d3noob/8375092
+
 class HuffTree {
   constructor(data, width, height) {
     this.svg = d3.select("#huff-tree-done").append("svg")
@@ -244,10 +247,6 @@ class HuffTree {
     return huffmanTable;
   }
 
-  huffCodeSort(a, b) {
-    (b.frequency - a.frequency);
-  }
-
   highlightRow(name) {
     d3.select(".huff-table-body").selectAll("tr").filter(function(row) {
       console.log(row);
@@ -260,52 +259,17 @@ class HuffTree {
       return row["symbol"] === name;
     }).style("background-color", "yellow");
   }
-
-  tabulate (data, columns) {
-    let table = d3.select("#huff-table").append("table").classed("huff-code-lookup", true);
-    let thead = table.append("thead");
-    let tbody = table.append("tbody").classed("huff-table-body", true);
-
-    // append header row
-    thead.append("tr")
-      .selectAll("th")
-      .data(columns).enter()
-        .append("th")
-        .text(column => column);
-
-    // append rows for each Object
-    let rows = tbody.selectAll("tr")
-      .data(data).enter()
-        .append("tr");
-
-    // create cells
-    let cells = rows.selectAll("td")
-      .data(function (row) {
-              return columns.map(
-                column => ({
-                  column: column,
-                  value: row[column],
-                })
-              );
-            }
-          )
-          .enter()
-          .append("td")
-            .text(d => d.value);
-
-    return table;
-  }
-
-  huffDictionaryFromData (data) {
-    const dict = {};
-    data.forEach(
-      (datum) => {
-        dict[datum.symbol.toString()] = datum.hCode;
-      }
-    );
-    return dict;
-  }
 }
+
+const huffDictionaryFromData = (data) => {
+  const dict = {};
+  data.forEach(
+    (datum) => {
+      dict[datum.symbol.toString()] = datum.hCode;
+    }
+  );
+  return dict;
+};
 
 const resetDisplayCode = () => {
   $(".sym-name").text("Mouse over a node to see its Huffman code.");
