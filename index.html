@@ -2,102 +2,187 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <link href="https://fonts.googleapis.com/css?family=Roboto+Slab" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Gentium+Book+Basic" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://d3js.org/d3.v4.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="./css/impress.css">
-    <link rel="stylesheet" type="text/css" href="./css/docs.css">
+    <script src="./js/nav.js"></script>
+    <script src="./js/freq_table.js"></script>
+    <script src="./js/huff_nodes.js"></script>
+    <script src="./js/doc_to_huff.js"></script>
+    <script src="./dist/huff_nodes_bundle.js"></script>
+    <script src="./dist/huff_tree_bundle.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="./css/main.css">
+    <link rel="stylesheet" type="text/css" href="./css/viz.css">
+    <link rel="stylesheet" type="text/css" href="./css/nav.css">
     <link rel="stylesheet" type="text/css" href="./css/huff.css">
+    <link rel="stylesheet" type="text/css" href="./css/docs.css">
+    <link rel="stylesheet" type="text/css" href="./css/font-awesome-4.7.0/css/font-awesome.min.css">
+
+
     <title>Huffman Compression</title>
   </head>
   <body>
-    <div id="impress">
-
-
-      <div class="step" id="intro" data-x="0" data-y="0">
-        <p>What is Huffman encoding?</p>
+    <div class="side-bar closed">
+      <div class="top-row">
+        <div class="close-side-bar-btn">
+          <i class="fa fa-times" aria-hidden="true"></i>
+        </div>
       </div>
-
-
-      <div class="step" id="ascii" data-x="2000" data-y="2000">
-          <div class="docs-view">
-            <div class="title-pane">
-              <h1>ASCII</h1>
-            </div>
-            <div class="text-doc">
-            </div>
-            <div class="bin-doc">
-            </div>
-            <div class="stats-pane">
-              Characters:
-              <span class="char-count">
-                0
-              </span>
-              <br>
-              Bits:
-              <span class="bit-count">
-                0
-              </span>
-              <br>
-              Speed:
-              <span class="playback-rate">
-                2
-              </span>
-            </div>
-            <div class="ascii-controls">
-              <button type="button" class="slower-btn" name="button">&#9194;</button>
-              <button type="button" class="back-btn" name="button">-1</button>
-              <button type="button" class="stop-btn" name="button">&#9632;</button>
-              <button type="button" class="pause-btn" name="button">&#9208;</button>
-              <button type="button" class="play-btn" name="button">&#9654;</button>
-              <button type="button" class="forward-btn" name="button">+1</button>
-              <button type="button" class="faster-btn" name="button">&#9193;</button>
-            </div>
+      <ul>
+        <li>
+          <p><a href="#freq-table">Creating a Frequency Table</a></p>
+        </li>
+        <li>
+          <p><a href="#huff-tree">Building the Huffman Tree</a></p>
+        </li>
+        <li>
+          <p><a href="#encoding">Encoding</a></p>
+        </li>
+        <li>
+          <p><a href="#results">Comparing Results</a></p>
+        </li>
+      </ul>
+    </div>
+    <div class="open-side-bar-btn">
+      <i class="fa fa-bars" aria-hidden="true"></i>
+    </div>
+    <div class="main">
+      <div class="title">Visualizing Huffman Compression</div>
+      <div class="author">Drew Nguyen</div>
+      <div class="icon-links">
+        <a href="http://www.github.com/amdrewnguyen/huffman-vis"><i class="fa fa-github" aria-hidden="true"></i></a>
+        <a href="mailto:drew.nguyen5@gmail.com?Subject=Greetings!"><i class="fa fa-envelope" aria-hidden="true"></i></a>
+        <a href="http://www.linkedin.com/in/drew-nguyen"><i class="fa fa-linkedin-square" aria-hidden="true"></i></a>
+      </div>
+      <div class="date">11.14.2017</div>
+      <p>The following are some visualizations I created to explore the d3js library and how <a href="https://en.wikipedia.org/wiki/Huffman_coding">Huffman compression</a> works.</p>
+      <p>For the sake of simplicity, we'll use ASCII-encoded text as the subject of our compression.</p>
+      <ol>
+        <li>
+          <p><a href="#freq-table">Creating a Frequency Table</a></p>
+        </li>
+        <li>
+          <p><a href="#huff-tree">Building the Huffman Tree</a></p>
+        </li>
+        <li>
+          <p><a href="#encoding">Encoding</a></p>
+        </li>
+        <li>
+          <p><a href="#results">Comparing Results</a></p>
+        </li>
+      </ol>
+      <p>
+      </p>
+      <h1 id="freq-table"><span>1</span> Creating a Frequency Table</h1>
+      <p>
+        The first step of the encoding procedure is to build a table of weights (frequencies), for each symbol (ASCII character) in the document that we want to encode. Eventually the entries will be ordered by descending weight. The visualization below maintains the order as the weights are being counted.
+      </p>
+      <div class="freq-table-vis">
+        <div class="doc-container">
+          <div class="text-doc" id="freq-table-doc">
           </div>
-      </div>
-
-      <div class="step" id="table-transform" data-x="1000" data-y="1000" data-z="-3000">
-        <div class="title-pane">
-          <h1>Freq Table Transform</h1>
         </div>
         <div class="freq-node-container">
         </div>
-        <div class="ascii-controls">
-          <button type="button" class="slower-btn" name="button">&#9194;</button>
-          <button type="button" class="back-btn" name="button">-1</button>
-          <button type="button" class="stop-btn" name="button">&#9632;</button>
-          <button type="button" class="pause-btn" name="button">&#9208;</button>
-          <button type="button" class="play-btn" name="button">&#9654;</button>
-          <button type="button" class="forward-btn" name="button">+1</button>
-          <button type="button" class="faster-btn" name="button">&#9193;</button>
+      </div>
+
+      <h1 id="huff-tree"><span>2</span> Building the Huffman Tree</h1>
+      <p>
+        Next we need to construct our binary tree from our frequency table. From Wikipedia:
+      </p>
+      <ol>
+        <li><p>Create a leaf node for each symbol and add it to the priority queue.</p></li>
+        <li><p>While there is more than one node in the queue:</p>
+          <p>
+            <ol>
+              <li><p>Remove the two nodes of highest priority (lowest probability) from the queue</p></li>
+              <li><p>Create a new internal node with these two nodes as children and with probability equal to the sum of the two nodes' probabilities.</p></li>
+              <li><p>Add the new node to the queue.</p></li>
+            </ol>
+          </p>
+        <li><p>The remaining node is the root node and the tree is complete.</p></li>
+      </ol>
+      <p>
+        This part of the algorithm was particularly challenging to code using d3, because it's actually a list of trees.
+      </p>
+      <div class="huff-nodes-vis">
+        <div id="tree-container">
+          <div class="tree-translate">
+            <div id="huff-nodes">
+
+              <span class="encoding"></span>
+            </div>
+          </div>
+          <div id="huff-table">
+
+          </div>
         </div>
       </div>
+      <h1 id="encoding"><span>3</span> Encoding</h1>
+      <p>
+        Now we have a binary tree in which every leaf is a unique symbol from our original document. The encoding for a given symbol is determined by the path from the root to the symbol's leaf. Starting from the root, with an empty code, travelling to a left child appends a 0 to the code, and travelling to the right, a 1.
+      </p>
+      <p>
+        Note that some lower frequency symbols actually end up with longer than 8 bit encodings.
+      </p>
+      <div class="huff-tree-vis">
+        <div id="huff-tree-done">
+        </div>
+        <div class="sym-code-area">
+          <div class="sym-name">
 
+          </div>
+          <div class="sym-code">
 
-      <div class="step" id="fourth" data-x="1000" data-y="1000" data-z="6000">
-          My fourth slide
+          </div>
+        </div>
       </div>
-
-      <div class="step" id="fif" data-x="-1000" data-y="-1000" data-rotate="270">
-          My fif slide
+      <h1 id="results"><span>4</span> Results</h1>
+      <p>
+        Now we'll encode our document with both both ASCII and our Huffman code to see how efficient our compression is. Included in the top of the Huffman document is the header, which simply lists each symbol along with its 4-byte frequency value. This overhead cost will be included in our calculation.
+      </p>
+      <div class="tri-doc-vis">
+        <div class="three-docs-view">
+          <div class="title-pane">
+            <h1>Text / ASCII / Huffman</h1>
+          </div>
+          <div class="third-column">
+            <div class="text-doc" id="text-doc-third">
+            </div>
+          </div>
+          <div class="third-column">
+            <div class="bin-doc" id="bin-doc-third">
+            </div>
+          </div>
+          <div class="third-column">
+            <div class="huff-doc" id="huff-doc-third">
+            </div>
+          </div>
+          <div class="stats-pane">
+            Characters:
+            <span class="char-count">
+              0
+            </span>
+            <br>
+            ASCII Bits:
+            <span class="bit-count">
+              0
+            </span>
+            <br>
+            Huffman Bits:
+            <span class="huff-bit-count">
+              0
+            </span>
+          </div>
+        </div>
       </div>
-
-
+      <p>
+        With the header included, we were able to achieve ________% compression using the Huffman encoding.
+      </p>
+      <p>
+        This example was very basic, and didn't include steps such as including a pseudo EOF characters.
+      </p>
     </div>
-
-
-    <div class="hint">
-      <p>Use a spacebar or arrow keys to navigate</p>
-    </div>
-    <script>
-      if ("ontouchstart" in document.documentElement) {
-          document.querySelector(".hint").innerHTML = "<p>Tap on the left or right to navigate</p>";
-      }
-    </script>
-
-
-    <script src="lib/impress.js"></script>
-    <script src="./dist/app_bundle.js"></script>
-    <!-- <script>impress().init();</script> -->
   </body>
 </html>

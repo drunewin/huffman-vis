@@ -1,26 +1,27 @@
 .freq-node-container {
   width: 100%;
-  background-color: lightblue;
   display: flex;
+  flex-direction: column;
   flex-wrap: wrap;
   padding: 5px;
 }
 
 .freq-node {
   padding: 0;
-  width: 50px;
-  height: 60px;
+  width: 150px;
+  height: 20px;
   border: 1px solid black;
   border-radius: 12px;
-  margin: 10px;
+  margin: 0 10px;
+  display: flex;
   transition: 1s;
 }
 
 .freq-node > .freq-count {
   margin: 0;
-  width: 100%;
-  height: 50%;
-  border-bottom-left-radius: 12px;
+  width: 50%;
+  height: 100%;
+  border-top-right-radius: 12px;
   border-bottom-right-radius: 12px;
   background-color: lightgreen;
   display: flex;
@@ -30,10 +31,10 @@
 
 .freq-node > .freq-name {
   margin: 0;
-  width: 100%;
-  height: 50%;
+  width: 50%;
+  height: 100%;
   border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
+  border-bottom-left-radius: 12px;
   background-color: lightpink;
   display: flex;
   justify-content: center;
@@ -57,5 +58,26 @@
 }
 
 .huff-code-lookup {
-  
+
+}
+
+#tree-container {
+  height: 90%;
+  width: 100%;
+  display: flex;
+}
+
+.tree-translate {
+  display: inline-block;
+}
+
+#huff-tree {
+  width: 100%;
+
+}
+
+#huff-table {
+  width: 25%;
+  height: 80%;
+  overflow-y: hidden;
 }

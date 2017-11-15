@@ -1,6 +1,8 @@
-import { startDocToAscii, setView } from './doc_to_ascii';
+import { startDocToAscii, setView, setViewWithHuff } from './doc_to_ascii';
 import { update, setTreeTransformView } from './list_collapse';
+import { listenerCallback } from './make_tree';
 import Player from './player';
+// import HuffmanTreeView from './huffman_tree_view';
 
 const stepTimers =
 {
@@ -26,16 +28,9 @@ $(() => {
   rootElement.on("impress:stepleave", (e) => {
     const stepId = e.target.id;
     console.log(`Left step: ${stepId}!`);
-    const timers = stepTimers[stepId];
-    if (timers.interval) {
-      clearInterval(timers.interval);
-      stepTimers[stepId].interval = null;
-    }
-    if (timers.timeout) {
-      clearTimeout(timers.timeout);
-      stepTimers[stepId].timeout = null;
-    }
   });
+
+  let treeCb = listenerCallback();
 
   rootElement.on("impress:stepenter", () => {
     let id = $(".present").attr("id");
@@ -49,6 +44,13 @@ $(() => {
       case "table-transform":
         setListeners(setTreeTransformView());
         break;
+      case "make-tree":
+        setListeners(treeCb);
+        player.setIntervalLength(1000);
+        break;
+      case "doc-ascii-huff":
+        setListeners(setViewWithHuff);
+        break;
       default:
         break;
     }
@@ -58,6 +60,7 @@ $(() => {
 });
 
 const setListeners = (iterationCb) => {
+  if (player) player.pause();
   player = new Player(iterationCb, 0);
   player.stepForward();
 

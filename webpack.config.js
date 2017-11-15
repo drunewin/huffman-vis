@@ -5,6 +5,8 @@ module.exports = {
   entry: {
     app: './js/app.js',
     makeTree: './js/make_tree.js',
+    huff_nodes: './js/huff_nodes.js',
+    huff_tree: './js/huff_tree.js',
   },
   output: {
     path: path.resolve(__dirname, 'dist'),

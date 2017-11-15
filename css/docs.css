@@ -6,6 +6,30 @@
   flex-wrap: wrap;
 }
 
+.three-docs-view {
+  display: flex;
+  justify-content: space-around;
+  height: 100%;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.half-column {
+  width: 50%;
+  height: 77.65%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.third-column {
+  width: 33.333333%;
+  height: 77.65%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .title-pane {
   width: 100%;
   display: flex;
@@ -14,22 +38,23 @@
 
 .text-doc {
   box-sizing: border-box;
-  width: 40%;
-  height: 77.65%;
+  width: 80%;
+  height: 100%;
   overflow: auto;
-  padding: 7.06% 4.71%;
+  padding: 7.06% 9.42%;
   border: 1px solid black;
+  margin-right: 0;
   /*font-size: 0.33%;*/
   font-size: 12px;
 }
 
-.bin-doc {
+.bin-doc, .huff-doc {
   font-family: 'Roboto Mono', monospace;
   box-sizing: border-box;
-  width: 40%;
-  height: 77.65%;
+  width: 80%;
+  height: 100%;
   overflow: auto;
-  padding: 7.06% 4.71%;
+  padding: 7.06% 9.42%;
   overflow: auto;
   border: 1px solid black;
   font-size: 12px;

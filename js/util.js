@@ -1,5 +1,18 @@
 import PentaNodeList from './penta_node_list.js';
 
+export const getCharFreq = (text) => {
+  const charFreq = {};
+  for(let i = 0; i < text.length; i++) {
+    let c = text.charAt(i);
+    if (charFreq.hasOwnProperty(c)) {
+      charFreq[c] += 1;
+    } else {
+      charFreq[c] = 1;
+    }
+  }
+  return charFreq;
+};
+
 const charBinAt = (str, idx) => {
   return padEightBits(str.charCodeAt(idx).toString(2));
 };
@@ -38,12 +51,14 @@ export const rootToJson = (root) => {
   if (root.isLeaf()) {
     return {
       name: root.name,
+      // id: root.name,
       count: root.count,
       children: null,
     };
   } else {
     return {
       name: root.name,
+      // id: root.name,
       count: root.count,
       children: [
         rootToJson(root.leftChild),

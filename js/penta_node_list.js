@@ -1,4 +1,5 @@
 import PentaNode from './penta_node.js';
+import { rootToJson } from './util';
 
 // (head) <-> (...nodes) <-> (tail)
 class PentaNodeList {
@@ -38,6 +39,21 @@ class PentaNodeList {
     this.count++;
   }
 
+  append(node) {
+    node.left = this.tail.left;
+    node.right = this.tail;
+    this.tail.left.right = node;
+    this.tail.left = node;
+  }
+
+  mergeLastTwo() {
+    if (this.count > 1) {
+      let last = this.pop();
+      let nextToLast = this.pop();
+      this.append(PentaNode.merge(nextToLast, last));
+    }
+  }
+
   combineLastTwo() {
     if (this.count > 1) {
       let last = this.pop();
@@ -71,6 +87,44 @@ class PentaNodeList {
       }
       return this.head.right;
     }
+  }
+
+  nextMorphState() {
+    if (this.count > 1) {
+      this.combineLastTwo();
+      return this.toHierarchyObject();
+    } else if (this.count === 1) {
+      return this.toHierarchyObject();
+    } else {
+      return {};
+    }
+  }
+
+  toHierarchyObject() {
+    if (this.isTree()) {
+      return rootToJson(this.head.right);
+    } else {
+      return this.leftToJson(this.head.right);
+    }
+  }
+
+  leftToJson(node) {
+    return {
+      name: node.name,
+      // id: node.name,
+      count: node.count,
+      children: (node.right === this.tail) ? [] : [this.leftToJson(node.right)],
+    };
+  }
+
+  isTree() {
+    return this.count === 1;
+  }
+
+  isInOrder() {
+    let walker = this.head.right;
+    let currCount = walker.count;
+
   }
 
 }

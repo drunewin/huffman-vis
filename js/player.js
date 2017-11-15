@@ -86,6 +86,12 @@ class Player {
     this.ended = false;
   }
 
+  setIntervalLength(n) {
+    this.pause();
+    this.interval = n;
+    
+  }
+
   getFps() {
     return Math.floor(1000 / this.interval);
   }
