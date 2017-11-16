@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 6);
+/******/ 	return __webpack_require__(__webpack_require__.s = 8);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -541,36 +541,43 @@ var PentaNode = function () {
 exports.default = PentaNode;
 
 /***/ }),
-/* 4 */
+/* 4 */,
+/* 5 */,
+/* 6 */,
+/* 7 */,
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.nextTreeState = exports.hierarchyFromData = exports.dataFromCountObject = exports.update = exports.setTreeTransformView = undefined;
-
 var _data = __webpack_require__(2);
 
-var passage = _data.appData.passage;
-var charFreq = _data.appData.charFreq;
+var _data2 = _interopRequireDefault(_data);
 
-var setTreeTransformView = exports.setTreeTransformView = function setTreeTransformView() {
-  var data = dataFromCountObject(charFreq);
-  update(data);
-  return function () {
-    data = nextTreeState(data);
-    update(data);
-    if (data.length <= 1) {
-      return true;
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var aData = new _data2.default(_data.appData.passage);
+
+var charFreq = aData.charFreq;
+var passage = aData.text;
+
+$(function () {
+  var nodes = [];
+
+  var index = 0;
+  var intervalId = 0;
+  intervalId = setInterval(function () {
+    if (index < passage.length) {
+      cursorTextDocHtml(passage, index, 0);
+      update(dataFromCountObject(countObj(passage, index++)));
+    } else {
+      clearInterval(intervalId);
     }
-    return false;
-  };
-};
+  }, 200);
+});
 
-var update = exports.update = function update(data) {
+var update = function update(data) {
   var nodes = d3.select(".freq-node-container").selectAll(".freq-node").data(data, function (d) {
     return d.name;
   });
@@ -584,7 +591,14 @@ var update = exports.update = function update(data) {
 
   var enterSelection = nodes.enter().append("div").classed("freq-node", true);
   enterSelection.append("div").classed("freq-name", true).text(function (d) {
-    return d.name;
+    switch (d.name) {
+      case " ":
+        return "[space]";
+      case "\n":
+        return "\\n";
+      default:
+        return d.name;
+    }
   });
   enterSelection.append("div").classed("freq-count", true).text(function (d) {
     return d.count;
@@ -592,250 +606,73 @@ var update = exports.update = function update(data) {
   enterSelection.style("order", function (d) {
     return -1 * d.count;
   });
-
-  nodes.exit().remove();
 };
 
-var dataCompare = function dataCompare(a, b) {
-  return b.count - a.count;
+var cursorTextDocHtml = function cursorTextDocHtml(txt, charIndex, num) {
+  var docHtml = $("#freq-table-doc");
+  var pre = $("<span>");
+  pre.addClass("pre-text");
+  var cur = $("<span>");
+  cur.addClass("cursor");
+  var post = $("<span>");
+  post.addClass("post-text");
+
+  var pText = void 0;
+  var cText = void 0;
+  var postText = void 0;
+
+  if (charIndex < 0) {
+    pText = "";
+    cText = txt.charAt(0);
+    postText = txt.substring(1);
+  } else if (charIndex < txt.length) {
+    pText = txt.substring(0, charIndex);
+    cText = txt.charAt(charIndex);
+    postText = txt.substring(charIndex + 1);
+  } else {
+    pText = txt.substring(0, charIndex);
+    cText = " ";
+    postText = "";
+  }
+
+  pre.text(pText);
+  cur.text(cText);
+  post.text(postText);
+
+  // $(".char-count").text((pText.length + cText.length).toString());
+
+  docHtml.html(pre);
+  docHtml.append(cur);
+  docHtml.append(post);
+
+  // docHtml.scrollTop(docHtml[0].scrollHeight - docHtml[0].clientHeight);
+
+  return docHtml;
 };
 
-var dataFromCountObject = exports.dataFromCountObject = function dataFromCountObject(obj) {
+var countObj = function countObj(txt, index) {
+  var charFreq = {};
+
+  for (var i = 0; i <= index; i++) {
+    var c = passage.charAt(i);
+    if (charFreq.hasOwnProperty(c)) {
+      charFreq[c] += 1;
+    } else {
+      charFreq[c] = 1;
+    }
+  }
+  return charFreq;
+};
+
+var dataFromCountObject = function dataFromCountObject(obj) {
   var keys = Object.keys(obj);
   var data = [];
   keys.forEach(function (key) {
     data.push({ name: key, count: obj[key] });
   });
-  return data.sort(dataCompare);
+  return data;
 };
-
-var hierarchyFromData = exports.hierarchyFromData = function hierarchyFromData(data) {
-  switch (data.length) {
-    case 0:
-      return {};
-    default:
-      return {
-        name: data[0].name,
-        count: data[0].count,
-        children: [hierarchyFromData(data.slice(1))]
-      };
-  }
-};
-
-var nextTreeState = exports.nextTreeState = function nextTreeState(data) {
-  var z = data.pop();
-  var y = data.pop();
-  var parent = { name: y.name.concat(z.name), count: y.count + z.count };
-  data.push(parent);
-
-  return data.sort(dataCompare);
-};
-
-/***/ }),
-/* 5 */,
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _penta_node_list = __webpack_require__(1);
-
-var _penta_node_list2 = _interopRequireDefault(_penta_node_list);
-
-var _util = __webpack_require__(0);
-
-var _data = __webpack_require__(2);
-
-var _list_collapse = __webpack_require__(4);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var passage = _data.appData.passage;
-
-var charFreq = _data.appData.charFreq;
-
-$(function () {
-  var linkedList = new _penta_node_list2.default(charFreq);
-  var treeView = new HuffmanTreeView(linkedList, 800, 677);
-});
-
-// Code for creating and drawing tree modified from:
-// http://bl.ocks.org/d3noob/8375092
-
-var HuffmanTreeView = function () {
-  function HuffmanTreeView(data, width, height) {
-    var _this = this;
-
-    _classCallCheck(this, HuffmanTreeView);
-
-    this.svg = d3.select("#huff-nodes").append("svg").attr("width", width).attr("height", height).append("g").attr("transform", "translate(" + "0" + "," + "20" + ")");
-
-    this.width = width;
-    this.height = height;
-
-    this.duration = 750; //ms
-    this.i = 0;
-
-    this.treemap = d3.tree().size([width, height]);
-
-    this.root = d3.hierarchy(data.toHierarchyObject(), function (d) {
-      return d.children;
-    });
-
-    this.root.x0 = width / 2;
-    this.root.y0 = 0;
-
-    this.leaves = this.treemap(this.root).leaves();
-
-    this.collapsed = [];
-
-    this.update(this.root);
-    var timer = setInterval(function () {
-      _this.root = d3.hierarchy(data.nextMorphState(), function (d) {
-        return d.children;
-      });
-
-      _this.root.x0 = width / 2;
-      _this.root.y0 = 0;
-      _this.update(_this.root);
-      if (data.isTree()) {
-        clearInterval(timer);
-      }
-    }, 1000);
-  }
-
-  _createClass(HuffmanTreeView, [{
-    key: 'numLeaves',
-    value: function numLeaves() {
-      return this.leaves.length;
-    }
-  }, {
-    key: 'setView',
-    value: function setView(n) {
-      this.update(this.root, n);
-    }
-  }, {
-    key: 'update',
-    value: function update(source, index) {
-      var treeData = this.treemap(this.root);
-      var nodes = treeData.descendants();
-      var links = treeData.descendants().slice(1);
-
-      nodes.forEach(function (d) {
-        d.y = d.depth * 40;
-      });
-
-      var node = this.svg.selectAll("g.node").data(nodes, function (d) {
-        return d.id || (d.id = d.name);
-      });
-
-      var nodeEnter = node.enter().append("g").attr("class", "node").attr("transform", function (d) {
-        return "translate(" + (d.parent ? d.x : source.x) + "," + (d.parent ? d.y : source.y) + ")";
-      }).on("click", click.bind(this));
-
-      nodeEnter.append('circle').attr('class', 'node').attr('r', 1e-6).style("fill", function (d) {
-        return d.children || d._children ? "lightsteelblue" : "#fff";
-      });
-
-      nodeEnter.append("text").attr("dx", -5).attr("y", function (d) {
-        return d.children || d._children ? -23 : 23;
-      }).attr("text-anchor", function (d) {
-        return d.children || d._children ? "end" : "start";
-      }).text(function (d) {
-        return d.data.name.length > 1 ? d.data.count : d.data.name;
-      });
-
-      var nodeUpdate = nodeEnter.merge(node);
-
-      // Transition to the proper position for the node
-      nodeUpdate.transition().duration(this.duration).attr("transform", function (d) {
-        return "translate(" + d.x + "," + d.y + ")";
-      });
-
-      // Update the node attributes and style
-      nodeUpdate.select('circle.node').attr('r', 10).style("fill", function (d) {
-        return d._children ? "lightsteelblue" : "#fff";
-      }).attr('cursor', 'pointer');
-
-      // Remove any exiting nodes
-      var nodeExit = node.exit().transition().duration(this.duration).attr("transform", function (d) {
-        return "translate(" + d.x + "," + d.y + ")";
-      }).remove();
-
-      // On exit reduce the node circles size to 0
-      nodeExit.select('circle').attr('r', 1e-6);
-
-      // On exit reduce the opacity of text labels
-      nodeExit.select('text').style('fill-opacity', 1e-6);
-
-      // ****************** links section ***************************
-
-      // Update the links...
-      var link = this.svg.selectAll('path.link').data(links, function (d) {
-        return d.id;
-      });
-
-      // Enter any new links at the parent's previous position.
-      var linkEnter = link.enter().insert('path', "g").attr("class", "link").attr('d', function (d) {
-        var o = { x: d.x, y: d.y };
-        return diagonal(o, o);
-      });
-
-      // UPDATE
-      var linkUpdate = linkEnter.merge(link);
-
-      // Transition back to the parent element position
-      linkUpdate.transition().duration(this.duration).attr('d', function (d) {
-        return diagonal(d, d.parent);
-      });
-
-      // Remove any exiting links
-      var linkExit = link.exit().transition().duration(this.duration).attr('d', function (d) {
-        var o = { x: source.x, y: source.y };
-        return diagonal(o, o);
-      }).remove();
-
-      // Store the old positions for transition.
-      nodes.forEach(function (d) {
-        d.x0 = d.x;
-        d.y0 = d.y;
-      });
-
-      // Creates a curved (diagonal) path from parent to the child nodes
-      function diagonal(s, d) {
-        var path = 'M ' + s.x + ' ' + s.y + '\n      L\n      ' + d.x + ' ' + d.y;
-
-        return path;
-      }
-
-      // Toggle children on click.
-      function click(d) {
-        if (d.children) {
-          d._children = d.children;
-          d.children = null;
-        } else {
-          d.children = d._children;
-          d._children = null;
-        }
-        this.update(d);
-      }
-    }
-  }]);
-
-  return HuffmanTreeView;
-}();
-
-exports.default = HuffmanTreeView;
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=huff_nodes.js.map
+//# sourceMappingURL=freq_table.js.map

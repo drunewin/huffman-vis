@@ -40,7 +40,6 @@ class HuffmanTreeView {
     this.root.y0 = 0;
 
     this.leaves = this.treemap(this.root).leaves();
-    console.log(this.leaves);
 
     this.collapsed = [];
 
@@ -55,7 +54,6 @@ class HuffmanTreeView {
       this.update(this.root);
       if (data.isTree()) {
         clearInterval(timer);
-        console.log("interval cleared");
       }
     }, 1000);
 

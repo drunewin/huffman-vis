@@ -41,9 +41,6 @@ class HuffTree {
     this.root.y0 = 0;
 
     this.leaves = this.treemap(this.root).leaves();
-    console.log(this.leaves);
-
-    this.collapsed = [];
 
     this.update(this.root);
 
@@ -66,8 +63,6 @@ class HuffTree {
 
     let node = this.svg.selectAll("g.node")
       .data(nodes, (d) => {
-        // debugger
-        // console.log(this.i);
         return d.id || (d.id = ++this.i);
       });
 
@@ -75,7 +70,6 @@ class HuffTree {
       .append("g")
       .attr("class", "node")
       .attr("transform", function(d) {
-        // console.log(d);
         return "translate(" + (d.parent ? d.x : source.x) + "," + (d.parent ? d.y : source.y) + ")";
       })
       .on("mouseover", showPath)
@@ -196,22 +190,16 @@ class HuffTree {
 
     // Highlight node's path
     function showPath(d) {
-      console.log("showing path");
-      // debugger
       let ids = d.ancestors().map((n) => n.id);
-      console.log(ids);
       let c = d3.selectAll("circle.node");
-      console.log(ids);
       c.filter((f) => {
         return ids.includes(f.id);
       }).style("fill", "yellow");
-      console.log(getHuffmanCode(d))
       displayHuffmanCode(d.data.name, getHuffmanCode(d));
     }
 
     // Return tree node's Huffman code
     function getHuffmanCode(d) {
-      // debugger
       const path = [];
       const fromRoot = d.ancestors().reverse();
       for(let i = 1; i < fromRoot.length; i++) {
@@ -221,8 +209,6 @@ class HuffTree {
           path.push("1");
         }
       }
-      console.log(path.join(""));
-      console.log(d);
       return path.join("");
     }
   }

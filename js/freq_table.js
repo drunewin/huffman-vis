@@ -1,6 +1,9 @@
-const passage = "Ain't the snow fallin' just a bit deeper these days\nAren't they building the stairs a bit steeper these days\nAnd the town's really changin' in so many ways time time time\n\nThe young folks they're growin' exceptionally tall\nAnd the newspaper print it's becomin' quite small\nAnd folks speak so softly you can hardly hear at all time time time\n\nThe jokes don't seem as witty as the old jokes once were\nAnd the girls are half as pretty as I remember her\nAnd today you know in the park a young man called me sir time time time\n\nYeah I'm not quite as anxious for fame or success\nAnd my eye finds the girl in the plain quiet dress\nAnd I cling a bit longer to each warm caress time time time\n\nSo I breathe a bit heavy when I climb a hill\nWhat of it my life now is really much more fulfilled\nBut they're tearin' down the building that I watched them build\nTime time time time time time";
+import AppData, {appData} from './data';
 
-const passageHtml = "Ain't the snow fallin' just a bit deeper these days<br/>Aren't they building the stairs a bit steeper these days<br/>And the town's really changin' in so many ways time time time<br/><br/>The young folks they're growin' exceptionally tall<br/>And the newspaper print it's becomin' quite small<br/>And folks speak so softly you can hardly hear at all time time time<br/><br/>The jokes don't seem as witty as the old jokes once were<br/>And the girls are half as pretty as I remember her<br/>And today you know in the park a young man called me sir time time time<br/><br/>Yeah I'm not quite as anxious for fame or success<br/>And my eye finds the girl in the plain quiet dress<br/>And I cling a bit longer to each warm caress time time time<br/><br/>So I breathe a bit heavy when I climb a hill<br/>What of it my life now is really much more fulfilled<br/>But they're tearin' down the building that I watched them build<br/>Time time time time time time";
+const aData = new AppData(appData.passage);
+
+const charFreq = aData.charFreq;
+const passage = aData.text;
 
 $(() => {
   const nodes = [];

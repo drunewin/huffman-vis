@@ -7,9 +7,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="./js/nav.js"></script>
-    <script src="./js/freq_table.js"></script>
-    <script src="./js/huff_nodes.js"></script>
-    <script src="./js/doc_to_huff.js"></script>
+    <script src="./dist/freq_table.js"></script>
+    <script src="./dist/doc_to_huff.js"></script>
     <script src="./dist/huff_nodes.js"></script>
     <script src="./dist/huff_tree.js"></script>
 
@@ -172,7 +171,7 @@
         </div>
       </div>
       <p>
-        With the header included, we were able to achieve ________% compression using the Huffman encoding.
+        With the header included, we were able to achieve <span id="compress-percent">___</span>% compression using the Huffman encoding.
       </p>
       <p>
         This example was very basic, and didn't include steps such as including a pseudo EOF characters.

@@ -17,7 +17,7 @@ const charBinAt = (str, idx) => {
   return padEightBits(str.charCodeAt(idx).toString(2));
 };
 
-const charToBin = (ch) => {
+export const charToBin = (ch) => {
   return padEightBits(ch.charCodeAt(0).toString(2));
 };
 
@@ -31,6 +31,14 @@ const stringToBin = (str) => {
 
 const padEightBits = (bin) => {
   const numLeadingZeros = 8 - bin.length;
+  return "0".repeat(numLeadingZeros).concat(bin);
+};
+
+export const padToNBIts = (bin, n) => {
+  const numLeadingZeros = n - bin.length;
+  if (numLeadingZeros < 0) {
+    console.log(`bin: ${bin}\nnumBits: ${n}`);
+  }
   return "0".repeat(numLeadingZeros).concat(bin);
 };
 

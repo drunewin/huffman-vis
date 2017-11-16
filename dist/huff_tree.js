@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 6);
+/******/ 	return __webpack_require__(__webpack_require__.s = 7);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -73,7 +73,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.rootToJson = exports.getCharFreq = undefined;
+exports.rootToJson = exports.padToNBIts = exports.charToBin = exports.getCharFreq = undefined;
 
 var _penta_node_list = __webpack_require__(1);
 
@@ -98,7 +98,7 @@ var charBinAt = function charBinAt(str, idx) {
   return padEightBits(str.charCodeAt(idx).toString(2));
 };
 
-var charToBin = function charToBin(ch) {
+var charToBin = exports.charToBin = function charToBin(ch) {
   return padEightBits(ch.charCodeAt(0).toString(2));
 };
 
@@ -112,6 +112,14 @@ var stringToBin = function stringToBin(str) {
 
 var padEightBits = function padEightBits(bin) {
   var numLeadingZeros = 8 - bin.length;
+  return "0".repeat(numLeadingZeros).concat(bin);
+};
+
+var padToNBIts = exports.padToNBIts = function padToNBIts(bin, n) {
+  var numLeadingZeros = n - bin.length;
+  if (numLeadingZeros < 0) {
+    console.log("bin: " + bin + "\nnumBits: " + n);
+  }
   return "0".repeat(numLeadingZeros).concat(bin);
 };
 
@@ -181,7 +189,6 @@ var PentaNodeList = function () {
     this.head.right = this.tail;
     var keys = Object.keys(freqHash);
     for (var i = 0; i < keys.length; i++) {
-      console.log(i);
       var node = new _penta_node2.default(keys[i], freqHash[keys[i]]);
       this.insert(node);
     }
@@ -324,34 +331,90 @@ exports.default = PentaNodeList;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.appData = undefined;
+exports.nToUBinInt = exports.getHuffHeader = exports.appData = undefined;
 
 var _util = __webpack_require__(0);
 
 var Util = _interopRequireWildcard(_util);
+
+var _penta_node_list = __webpack_require__(1);
+
+var _penta_node_list2 = _interopRequireDefault(_penta_node_list);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var appData = exports.appData = {
-  passage: "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-
+  passage: "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
 };
 
-var AppdData = function AppdData(text) {
-  _classCallCheck(this, AppdData);
+var AppData = function AppData(text) {
+  _classCallCheck(this, AppData);
 
   this.text = text;
   this.charFreq = Util.getCharFreq(this.text);
-  this.rootNode = {};
-  this.huffDict = {};
-  this.huffHeader = "";
+  this.linkedList = new _penta_node_list2.default(this.charFreq);
+  this.rootNode = this.linkedList.getPentaNodeTree();
+  this.huffDict = makeHuffDict(this.rootNode);
+  this.huffHeader = getHuffHeader(this.charFreq);
 };
 
 appData["charFreq"] = Util.getCharFreq(appData.passage);
 appData["huffDict"] = {};
 appData["huffHeader"] = "";
+
+var makeHuffDict = function makeHuffDict(rootNode) {
+  var huffDict = {};
+  var traverse = function traverse(node, code) {
+    if (node.leftChild) {
+      traverse(node.leftChild, code.concat("0"));
+    }
+    if (node.rightChild) {
+      traverse(node.rightChild, code.concat("1"));
+    }
+    if (!node.leftChild && !node.rightChild) {
+      huffDict[node.name] = code;
+    }
+  };
+  traverse(rootNode, "");
+  return huffDict;
+};
+
+var getHuffHeader = exports.getHuffHeader = function getHuffHeader(freq) {
+  var headerElements = [];
+  var symbols = Object.keys(freq);
+  var fourByteLength = Util.padToNBIts(nToUBinInt(symbols.length), 32);
+  headerElements.push(fourByteLength);
+
+  var fourByteFour = Util.padToNBIts(nToUBinInt(4), 32);
+  headerElements.push(fourByteFour);
+
+  symbols.forEach(function (sym) {
+    var fourByteFreq = Util.padToNBIts(nToUBinInt(freq[sym]), 32);
+    headerElements.push('' + Util.charToBin(sym) + fourByteFreq);
+  });
+  return headerElements.join("");
+};
+
+var nToUBinInt = exports.nToUBinInt = function nToUBinInt(num) {
+  switch (num) {
+    case 0:
+      return "00";
+    case 1:
+      return "01";
+    case 2:
+      return "10";
+    case 3:
+      return "11";
+    default:
+      return nToUBinInt(Math.floor(num / 2)).concat((num % 2).toString());
+  }
+};
+
+exports.default = AppData;
 
 /***/ }),
 /* 3 */
@@ -570,7 +633,8 @@ var nextTreeState = exports.nextTreeState = function nextTreeState(data) {
 
 /***/ }),
 /* 5 */,
-/* 6 */
+/* 6 */,
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -631,9 +695,6 @@ var HuffTree = function () {
     this.root.y0 = 0;
 
     this.leaves = this.treemap(this.root).leaves();
-    console.log(this.leaves);
-
-    this.collapsed = [];
 
     this.update(this.root);
   }
@@ -662,13 +723,10 @@ var HuffTree = function () {
       });
 
       var node = this.svg.selectAll("g.node").data(nodes, function (d) {
-        // debugger
-        // console.log(this.i);
         return d.id || (d.id = ++_this.i);
       });
 
       var nodeEnter = node.enter().append("g").attr("class", "node").attr("transform", function (d) {
-        // console.log(d);
         return "translate(" + (d.parent ? d.x : source.x) + "," + (d.parent ? d.y : source.y) + ")";
       }).on("mouseover", showPath).on("mouseout", function () {
         _this.update(_this.root);
@@ -763,24 +821,18 @@ var HuffTree = function () {
 
       // Highlight node's path
       function showPath(d) {
-        console.log("showing path");
-        // debugger
         var ids = d.ancestors().map(function (n) {
           return n.id;
         });
-        console.log(ids);
         var c = d3.selectAll("circle.node");
-        console.log(ids);
         c.filter(function (f) {
           return ids.includes(f.id);
         }).style("fill", "yellow");
-        console.log(getHuffmanCode(d));
         displayHuffmanCode(d.data.name, getHuffmanCode(d));
       }
 
       // Return tree node's Huffman code
       function getHuffmanCode(d) {
-        // debugger
         var path = [];
         var fromRoot = d.ancestors().reverse();
         for (var i = 1; i < fromRoot.length; i++) {
@@ -790,8 +842,6 @@ var HuffTree = function () {
             path.push("1");
           }
         }
-        console.log(path.join(""));
-        console.log(d);
         return path.join("");
       }
     }

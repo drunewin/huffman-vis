@@ -11,7 +11,6 @@ class PentaNodeList {
     this.head.right = this.tail;
     let keys = Object.keys(freqHash);
     for (let i = 0; i < keys.length; i++) {
-      console.log(i);
       let node = new PentaNode(keys[i], freqHash[keys[i]]);
       this.insert(node);
     }
